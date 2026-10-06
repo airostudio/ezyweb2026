@@ -30,19 +30,17 @@
   margin-right: auto;
   border-radius: var(--r-sm);
 }
-.mark {
-  width: 2rem;
-  height: 2rem;
+/* The wordmark's sparkles add whitespace, so it is sized a touch larger
+   than the header's text and nudged to optically align with the nav. */
+.logo {
+  height: 3.1rem;
+  width: auto;
+  margin-block: -0.5rem;
+  margin-left: -0.3rem;
   transition: transform 0.4s var(--ease-spring);
 }
-.brand:hover .mark {
-  transform: rotate(-12deg) scale(1.1);
-}
-.wordmark {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.4rem;
-  letter-spacing: -0.05em;
+.brand:hover .logo {
+  transform: rotate(-3deg) scale(1.05);
 }
 
 .nav {
@@ -118,6 +116,11 @@
   color: var(--magenta-ink);
 }
 
+@media (min-width: 640px) {
+  .logo {
+    height: 3.6rem;
+  }
+}
 @media (min-width: 420px) {
   .hideXs {
     display: inline-flex;

@@ -8,6 +8,11 @@
   border: 1px solid var(--line);
   box-shadow: 0 24px 48px -36px rgb(var(--shadow-rgb) / 0.5);
   will-change: transform;
+  min-width: 0;
+}
+/* Grid children default to min-width:auto, which lets nowrap titles blow out the column. */
+.card > * {
+  min-width: 0;
 }
 .thumbWrap {
   position: relative;

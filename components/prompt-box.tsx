@@ -1,12 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { ArrowUp, Dices, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import * as z from "zod/mini";
 import { track } from "@/lib/analytics";
 import { DEMO_PROMPTS, EXAMPLE_PROMPTS, STARTERS } from "@/lib/content";
 import { promptSchema } from "@/lib/schemas";
@@ -133,7 +133,7 @@ export function PromptBox({ variant = "hero", starters = true, demo = true, auto
   return (
     <div className={cn(styles.wrap, isHero ? styles.hero : styles.compact)}>
       <form onSubmit={onSubmit} noValidate>
-        <motion.div
+        <m.div
           className={cn(styles.box, "ring-electric", (focused || submitting) && "is-spinning", submitting && styles.submitting)}
           animate={submitting ? { scale: [1, 0.98, 1.01, 1] } : { scale: 1 }}
           transition={{ duration: 0.5 }}
@@ -175,7 +175,7 @@ export function PromptBox({ variant = "hero", starters = true, demo = true, auto
 
           <div className={styles.toolbar}>
             <div className={styles.tools}>
-              <button type="button" className="btn btn-ghost btn-sm" onClick={surprise} disabled={submitting}>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={surprise} disabled={submitting} aria-label="Surprise me with an idea">
                 <Dices aria-hidden /> <span className={styles.toolLabel}>Surprise me</span>
               </button>
               {isHero && (
@@ -192,22 +192,22 @@ export function PromptBox({ variant = "hero", starters = true, demo = true, auto
             <button type="submit" className={cn("btn btn-electric", isHero ? "" : "btn-sm", styles.submit)} disabled={submitting} aria-label="Create my website">
               <AnimatePresence mode="wait" initial={false}>
                 {submitting ? (
-                  <motion.span key="s" className={styles.submitInner} initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+                  <m.span key="s" className={styles.submitInner} initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
                     <span className="spinner" aria-hidden /> Summoning…
-                  </motion.span>
+                  </m.span>
                 ) : (
-                  <motion.span key="i" className={styles.submitInner} initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+                  <m.span key="i" className={styles.submitInner} initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
                     <span className={styles.submitText}>Make it</span> <ArrowUp aria-hidden />
-                  </motion.span>
+                  </m.span>
                 )}
               </AnimatePresence>
             </button>
           </div>
-        </motion.div>
+        </m.div>
 
         <AnimatePresence>
           {errors.prompt && (
-            <motion.p
+            <m.p
               id={errorId}
               role="alert"
               className={cn("error-text", styles.error)}
@@ -216,7 +216,7 @@ export function PromptBox({ variant = "hero", starters = true, demo = true, auto
               exit={{ opacity: 0 }}
             >
               {errors.prompt.message}
-            </motion.p>
+            </m.p>
           )}
         </AnimatePresence>
       </form>
@@ -242,11 +242,11 @@ export function PromptBox({ variant = "hero", starters = true, demo = true, auto
           {starters && (
             <ul className={styles.starters} aria-label="Starter ideas">
               {STARTERS.map((s, i) => (
-                <motion.li key={s.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.05 }}>
+                <m.li key={s.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.05 }}>
                   <button type="button" className="chip" onClick={() => typeIn(s.prompt, false)} disabled={submitting}>
                     <span aria-hidden>{s.emoji}</span> {s.label}
                   </button>
-                </motion.li>
+                </m.li>
               ))}
             </ul>
           )}
@@ -258,8 +258,10 @@ export function PromptBox({ variant = "hero", starters = true, demo = true, auto
 
 /** Typewriter that cycles through example prompts (decorative). */
 function CyclingPlaceholder({ paused }: { paused: boolean }) {
+  // Start fully typed so the server-rendered HTML shows a real example at first
+  // paint (this box is the hero's LCP element); the loop then deletes and retypes.
   const [index, setIndex] = useState(0);
-  const [text, setText] = useState("");
+  const [text, setText] = useState<string>(EXAMPLE_PROMPTS[0]);
   const [reduce, setReduce] = useState(false);
 
   useEffect(() => {
@@ -274,8 +276,8 @@ function CyclingPlaceholder({ paused }: { paused: boolean }) {
       const t = window.setTimeout(() => setIndex((i) => i + 1), 3500);
       return () => window.clearTimeout(t);
     }
-    let i = 0;
-    let deleting = false;
+    let i = index === 0 ? full.length : 0;
+    let deleting = index === 0;
     let timer: number;
     const step = () => {
       if (!deleting) {
@@ -297,7 +299,7 @@ function CyclingPlaceholder({ paused }: { paused: boolean }) {
         timer = window.setTimeout(step, 16);
       }
     };
-    timer = window.setTimeout(step, 300);
+    timer = window.setTimeout(step, index === 0 ? 2600 : 300);
     return () => window.clearTimeout(timer);
   }, [index, paused, reduce]);
 

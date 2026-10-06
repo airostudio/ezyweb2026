@@ -5,28 +5,30 @@
   pointer-events: none;
   z-index: 0;
 }
+/* Soft blobs are radial gradients rather than blurred circles: same look,
+   but no full-screen blur filter to rasterise (big win on low-end phones). */
 .blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
   will-change: transform;
   animation: blob 22s ease-in-out infinite;
+  background: radial-gradient(closest-side, var(--c), transparent);
 }
 .b1 {
   width: 46vmax;
   height: 46vmax;
   left: -14vmax;
   top: -18vmax;
-  background: var(--cyan);
-  opacity: 0.32;
+  --c: var(--cyan);
+  opacity: 0.42;
 }
 .b2 {
   width: 42vmax;
   height: 42vmax;
   right: -14vmax;
   top: -6vmax;
-  background: var(--magenta);
-  opacity: 0.28;
+  --c: var(--magenta);
+  opacity: 0.38;
   animation-delay: -7s;
   animation-duration: 26s;
 }
@@ -35,19 +37,19 @@
   height: 26vmax;
   left: 38%;
   top: 34%;
-  background: var(--wattle);
-  opacity: 0.18;
+  --c: var(--wattle);
+  opacity: 0.26;
   animation-delay: -13s;
   animation-duration: 30s;
 }
 [data-theme="dark"] .b1 {
-  opacity: 0.22;
+  opacity: 0.3;
 }
 [data-theme="dark"] .b2 {
-  opacity: 0.2;
+  opacity: 0.28;
 }
 [data-theme="dark"] .b3 {
-  opacity: 0.1;
+  opacity: 0.14;
 }
 
 .grid {
@@ -61,6 +63,7 @@
   -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 20%, transparent 75%);
 }
 
+/* Particles skip box-shadow glows: animated shadows are costly to raster. */
 .particle {
   position: absolute;
   border-radius: 50%;
@@ -69,15 +72,12 @@
 }
 .h0 {
   background: var(--cyan);
-  box-shadow: 0 0 10px var(--cyan);
 }
 .h1 {
   background: var(--magenta);
-  box-shadow: 0 0 10px var(--magenta);
 }
 .h2 {
   background: var(--wattle);
-  box-shadow: 0 0 10px var(--wattle);
 }
 @keyframes drift-up {
   0% {

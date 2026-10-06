@@ -18,13 +18,13 @@
 }
 .brand {
   display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.6rem;
-  letter-spacing: -0.05em;
   width: fit-content;
+  border-radius: var(--r-sm);
+}
+.logo {
+  height: 3.5rem;
+  width: auto;
+  margin-left: -0.35rem;
 }
 .colTitle {
   font-family: var(--font-mono);
@@ -46,21 +46,17 @@
 .col a:hover {
   color: var(--fg);
 }
+/* Oversized wordmark that bleeds off the bottom edge */
 .giant {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(5rem, 24vw, 22rem);
-  line-height: 0.8;
-  letter-spacing: -0.07em;
-  text-align: center;
-  margin-top: 3rem;
-  background: var(--grad-electric);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  opacity: 0.9;
+  margin: 2.5rem auto -14%;
+  max-width: 68rem;
+  opacity: 0.95;
   user-select: none;
-  translate: 0 0.12em;
+  pointer-events: none;
+}
+.giant svg {
+  width: 100%;
+  height: auto;
 }
 .bottom {
   position: relative;

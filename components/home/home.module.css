@@ -21,14 +21,14 @@
 
 .rise {
   display: inline-block;
-  animation: rise 0.9s var(--ease-out) both;
+  animation: rise 0.7s var(--ease-out) both;
   animation-delay: var(--d, 0ms);
 }
+/* Transform-only on purpose: text that starts at opacity 0 isn't counted as
+   painted by LCP until it's visible, which would delay the hero's LCP. */
 @keyframes rise {
   from {
-    opacity: 0;
-    transform: translateY(18px);
-    filter: blur(6px);
+    transform: translateY(14px);
   }
 }
 
@@ -520,6 +520,7 @@
 }
 .teaserBadge {
   position: absolute;
+  z-index: 3;
   top: -0.8rem;
   left: 1.75rem;
 }

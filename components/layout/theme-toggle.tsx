@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { Laptop, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -55,7 +55,7 @@ export function ThemeToggle() {
       }}
     >
       <AnimatePresence mode="wait" initial={false}>
-        <motion.span
+        <m.span
           key={current}
           style={{ display: "inline-flex" }}
           initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
@@ -64,7 +64,7 @@ export function ThemeToggle() {
           transition={{ type: "spring", stiffness: 500, damping: 28 }}
         >
           <Icon aria-hidden />
-        </motion.span>
+        </m.span>
       </AnimatePresence>
     </button>
   );

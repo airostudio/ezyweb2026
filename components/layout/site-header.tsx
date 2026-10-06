@@ -1,12 +1,12 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { LayoutDashboard, Menu, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { LogoMark } from "@/components/icons";
+import { BrandLogo } from "@/components/brand";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -44,9 +44,8 @@ export function SiteHeader() {
   return (
     <header className={cn(styles.header, (scrolled || open) && styles.scrolled)}>
       <div className={cn("container", styles.inner)}>
-        <Link href="/" className={styles.brand} aria-label="Webese home">
-          <LogoMark className={styles.mark} />
-          <span className={styles.wordmark}>webese</span>
+        <Link href="/" className={styles.brand}>
+          <BrandLogo className={styles.logo} title="ezyweb — home" />
         </Link>
 
         <nav aria-label="Main" className={styles.nav}>
@@ -55,7 +54,7 @@ export function SiteHeader() {
               <li key={item.href}>
                 <Link href={item.href} className={styles.navLink} aria-current={isActive(item.href) ? "page" : undefined}>
                   {isActive(item.href) && (
-                    <motion.span layoutId="nav-pill" className={styles.pill} transition={{ type: "spring", stiffness: 500, damping: 38 }} />
+                    <m.span layoutId="nav-pill" className={styles.pill} transition={{ type: "spring", stiffness: 500, damping: 38 }} />
                   )}
                   <span className={styles.navText}>{item.label}</span>
                 </Link>
@@ -93,7 +92,7 @@ export function SiteHeader() {
 
       <AnimatePresence>
         {open && (
-          <motion.nav
+          <m.nav
             id="mobile-menu"
             aria-label="Mobile"
             className={styles.mobile}
@@ -105,18 +104,18 @@ export function SiteHeader() {
             <ul>
               {[...siteConfig.nav, session?.user ? { href: "/dashboard", label: "My sites" } : { href: "/signin", label: "Sign in" }].map(
                 (item, i) => (
-                  <motion.li key={item.href} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.04 * i }}>
+                  <m.li key={item.href} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.04 * i }}>
                     <Link href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>
                       {item.label}
                     </Link>
-                  </motion.li>
+                  </m.li>
                 ),
               )}
             </ul>
             <Link href="/create" className="btn btn-electric btn-lg w-full">
               <Sparkles aria-hidden /> Make a site — it&apos;s free
             </Link>
-          </motion.nav>
+          </m.nav>
         )}
       </AnimatePresence>
     </header>

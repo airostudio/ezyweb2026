@@ -1,0 +1,223 @@
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+.banner {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 1rem 1.25rem;
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--wattle) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--wattle) 40%, transparent);
+}
+.banner svg {
+  flex-shrink: 0;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-top: 0.15rem;
+}
+.banner a {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+}
+.skeleton {
+  height: 17rem;
+  border-radius: var(--r-xl);
+  background: linear-gradient(100deg, var(--bg-sunken) 30%, var(--bg-raised) 50%, var(--bg-sunken) 70%);
+  background-size: 300% 100%;
+  animation: skeleton 1.4s ease-in-out infinite;
+}
+@keyframes skeleton {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+.site {
+  padding: 0.6rem;
+  display: grid;
+  gap: 0.75rem;
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s;
+}
+.site:hover {
+  transform: translateY(-4px);
+}
+.preview {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--bg-sunken);
+  border: 1px solid var(--line);
+}
+.previewFrame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400%;
+  max-width: none; /* the reset caps iframes at 100% */
+  height: 400%;
+  border: 0;
+  transform: scale(0.25);
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.siteMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.35rem 0.25rem;
+}
+.siteText {
+  flex: 1;
+  min-width: 0;
+}
+.siteTitle {
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.siteSub {
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--success);
+  font-weight: 600;
+}
+.live svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+.menuWrap {
+  position: relative;
+}
+.menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.35rem);
+  z-index: 5;
+  min-width: 10rem;
+  display: grid;
+  padding: 0.35rem;
+  border-radius: var(--r-md);
+  background: var(--bg-raised);
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 20px 40px -16px rgb(var(--shadow-rgb) / 0.5);
+  transform-origin: bottom right;
+}
+.menu a,
+.menu button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--r-sm);
+  font-size: 0.9rem;
+  text-align: left;
+}
+.menu a:hover,
+.menu button:hover {
+  background: var(--bg-sunken);
+}
+.menu svg {
+  width: 1rem;
+  height: 1rem;
+}
+.danger {
+  color: var(--danger);
+}
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: clamp(3rem, 8vw, 5rem) 1.5rem;
+  text-align: center;
+  border-radius: var(--r-2xl);
+  border: 2px dashed var(--line-strong);
+}
+.emptyArt {
+  position: relative;
+  font-size: 4rem;
+  display: grid;
+  place-items: center;
+}
+.emptyArt span:last-child {
+  position: absolute;
+  font-size: 1.75rem;
+  bottom: 0;
+}
+.upgradeList {
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  color: var(--fg-muted);
+}
+.settings {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 40rem;
+}
+.panel {
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+.panelTitle {
+  font-size: 1.25rem;
+}
+.switchRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 3rem;
+  height: 1.75rem;
+  border-radius: 99px;
+  background: var(--line-strong);
+  transition: background-color 0.2s;
+}
+.switch[aria-checked="true"] {
+  background: var(--success);
+}
+.switch span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: calc(1.75rem - 6px);
+  height: calc(1.75rem - 6px);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.25);
+  transition: translate 0.3s var(--ease-spring);
+}
+.switch[aria-checked="true"] span {
+  translate: 1.25rem 0;
+}
+.dangerPanel {
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+}

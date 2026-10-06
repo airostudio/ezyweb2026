@@ -1,0 +1,72 @@
+.page {
+  position: relative;
+  isolation: isolate;
+  min-height: calc(100dvh - var(--header-h));
+  display: grid;
+  place-items: center;
+  padding: 2rem var(--gutter) 4rem;
+  overflow: hidden;
+}
+.glow {
+  position: absolute;
+  z-index: -1;
+  width: 40rem;
+  height: 40rem;
+  border-radius: 50%;
+  background: var(--grad-electric);
+  filter: blur(120px);
+  opacity: calc(var(--glow-strength) * 0.5);
+}
+.card {
+  width: min(26rem, 100%);
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+}
+.head {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  text-align: center;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--fg-subtle);
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.sent {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+.mailIcon {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 1.25rem;
+  color: #07080b;
+  background: var(--grad-electric);
+  box-shadow: 0 16px 40px -14px var(--magenta);
+}
+.mailIcon svg {
+  width: 2rem;
+  height: 2rem;
+}
+.verify {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+.verifyEmoji {
+  font-size: 4rem;
+}

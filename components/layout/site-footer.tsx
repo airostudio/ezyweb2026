@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogoMark } from "@/components/icons";
+import { BrandLogo } from "@/components/brand";
 import { siteConfig } from "@/lib/site";
 import styles from "./site-footer.module.css";
 
@@ -22,9 +22,8 @@ export function SiteFooter() {
       <div className="container">
         <div className={styles.top}>
           <div className={styles.brandCol}>
-            <Link href="/" className={styles.brand} aria-label="Webese home">
-              <LogoMark width={36} height={36} />
-              <span>webese</span>
+            <Link href="/" className={styles.brand}>
+              <BrandLogo className={styles.logo} title="ezyweb — home" />
             </Link>
             <p className="muted">Websites for the fun stuff. Made with love (and a lot of flat whites) in Australia.</p>
           </div>
@@ -41,9 +40,9 @@ export function SiteFooter() {
             </nav>
           ))}
         </div>
-        <p className={styles.giant} aria-hidden>
-          webese
-        </p>
+        <div className={styles.giant} aria-hidden>
+          <BrandLogo title="" />
+        </div>
         <div className={styles.bottom}>
           <p>
             © {new Date().getFullYear()} {siteConfig.company}. All rights reserved.

@@ -1,34 +1,6 @@
 /** Custom SVG icons & brand marks (Lucide covers the rest). */
-import { useId } from "react";
 
 type IconProps = React.SVGProps<SVGSVGElement>;
-
-/** Webese mark: a tilted browser window with a spark bursting out of it. */
-export function LogoMark(props: IconProps) {
-  const id = useId();
-  return (
-    <svg viewBox="0 0 32 32" fill="none" aria-hidden {...props}>
-      <defs>
-        <linearGradient id={`${id}-g`} x1="2" y1="4" x2="30" y2="30" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#00E5FF" />
-          <stop offset="1" stopColor="#FF2BD6" />
-        </linearGradient>
-      </defs>
-      <rect x="3" y="7" width="22" height="20" rx="6" transform="rotate(-8 14 17)" fill={`url(#${id}-g)`} />
-      <path d="M6.6 12.2 24 9.7" transform="rotate(-8 14 17)" stroke="#07080B" strokeOpacity=".35" strokeWidth="1.6" strokeLinecap="round" />
-      <path
-        d="M25.5 1.5c.5 2.6 1.4 3.5 4 4-2.6.5-3.5 1.4-4 4-.5-2.6-1.4-3.5-4-4 2.6-.5 3.5-1.4 4-4Z"
-        fill="#FFC23D"
-        stroke="#07080B"
-        strokeWidth="1.2"
-        strokeLinejoin="round"
-      />
-      <path d="M10 19.5c1.6 1.8 4.4 2.1 6.4.6" stroke="#07080B" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="11" cy="15.6" r="1.3" fill="#07080B" />
-      <circle cx="16.6" cy="14.8" r="1.3" fill="#07080B" />
-    </svg>
-  );
-}
 
 /** 4-point sparkle used as a decorative accent. */
 export function Spark(props: IconProps) {
@@ -64,6 +36,14 @@ export function ScribbleArrow(props: IconProps) {
     <svg viewBox="0 0 80 50" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden {...props}>
       <path d="M4 8c14 2 30 6 40 16 7 7 10 14 12 20" />
       <path d="M46 38l10 7 4-12" />
+    </svg>
+  );
+}
+
+export function XLogo(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...props}>
+      <path d="M17.8 2.5h3.3l-7.2 8.2 8.5 10.8h-6.6l-5.2-6.6-6 6.6H1.3l7.7-8.8L.9 2.5h6.8l4.7 6.1 5.4-6.1Zm-1.1 17.1h1.8L7.2 4.3H5.3l11.4 15.3Z" />
     </svg>
   );
 }

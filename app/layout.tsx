@@ -7,14 +7,15 @@ import { Analytics } from "@/components/analytics";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
-const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
-const bricolage = Bricolage_Grotesque({
-  subsets: ["latin"],
-  variable: "--font-bricolage",
-  axes: ["opsz", "wdth"],
-  display: "swap",
-});
+// Body text uses `optional`: if Geist isn't ready almost immediately (slow first
+// visit) the metric-matched fallback stays, so paragraphs never re-render late
+// and LCP isn't pushed back by a font swap. Cached/fast loads get Geist.
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "optional" });
+// Mono is only used for small eyebrows/labels, so it isn't preloaded.
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap", preload: false });
+// Weight axis only: the opsz/wdth axes more than double the file (≈130KB → ≈50KB)
+// and this font is on the critical path for every headline.
+const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-bricolage", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),

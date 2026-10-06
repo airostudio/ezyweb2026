@@ -2,7 +2,7 @@ import NextAuth, { type NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Apple from "next-auth/providers/apple";
-import { authSecret, verifyMagicToken } from "@/lib/magic-link";
+import { DEV_SECRET, verifyMagicToken } from "@/lib/magic-link";
 
 /**
  * NextAuth v5 config.
@@ -37,7 +37,8 @@ export const enabledSocialProviders = {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,
-  secret: authSecret(),
+  // In production NextAuth reads AUTH_SECRET itself and errors at request time if missing.
+  secret: process.env.AUTH_SECRET ?? (process.env.NODE_ENV !== "production" ? DEV_SECRET : undefined),
   trustHost: true,
   session: { strategy: "jwt" },
   pages: { signIn: "/signin", verifyRequest: "/signin?sent=1", error: "/signin" },

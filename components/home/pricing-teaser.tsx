@@ -5,7 +5,7 @@ import styles from "./home.module.css";
 
 export function PricingTeaser() {
   return (
-    <section className="section" aria-labelledby="pricing-teaser-title">
+    <section className="section cv-auto" aria-labelledby="pricing-teaser-title">
       <div className="container">
         <div className="section-head is-center">
           <p className="eyebrow">Pricing</p>

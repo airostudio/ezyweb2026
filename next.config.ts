@@ -14,6 +14,9 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Always render <title>/<meta> in <head> (Next 15 otherwise streams metadata
+  // into <body> on dynamic routes for non-bot user agents).
+  htmlLimitedBots: /.*/,
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },

@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
 /** Minimal, accessible toast system (polite live region, auto-dismiss). */
@@ -30,7 +30,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       <div className="toast-region" role="status" aria-live="polite">
         <AnimatePresence>
           {toasts.map((t) => (
-            <motion.div
+            <m.div
               key={t.id}
               className="toast"
               layout
@@ -41,7 +41,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             >
               {t.emoji && <span aria-hidden>{t.emoji}</span>}
               <span>{t.message}</span>
-            </motion.div>
+            </m.div>
           ))}
         </AnimatePresence>
       </div>

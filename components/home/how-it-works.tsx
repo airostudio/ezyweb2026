@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Check, Copy, Link2 } from "lucide-react";
 import styles from "./home.module.css";
 
@@ -27,7 +27,7 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section className="section" aria-labelledby="how-title">
+    <section className="section cv-auto" aria-labelledby="how-title">
       <div className="container">
         <div className="section-head is-center">
           <p className="eyebrow">How it works</p>
@@ -37,7 +37,7 @@ export function HowItWorks() {
         </div>
         <ol className={styles.steps}>
           {STEPS.map((s, i) => (
-            <motion.li
+            <m.li
               key={s.n}
               className={`card ${styles.step}`}
               initial={{ opacity: 0, y: 40, rotate: i === 1 ? 0 : i === 0 ? -2 : 2 }}
@@ -50,7 +50,7 @@ export function HowItWorks() {
               <p className={styles.stepN}>{s.n}</p>
               <h3 className="h-3">{s.title}</h3>
               <p className="muted">{s.body}</p>
-            </motion.li>
+            </m.li>
           ))}
         </ol>
       </div>
@@ -61,7 +61,7 @@ export function HowItWorks() {
 function ChatArt() {
   return (
     <div className={styles.chatArt} aria-hidden>
-      <motion.div
+      <m.div
         className={styles.bubble}
         initial={{ scale: 0.6, opacity: 0 }}
         whileInView={{ scale: 1, opacity: 1 }}
@@ -69,7 +69,7 @@ function ChatArt() {
         transition={{ type: "spring", delay: 0.3 }}
       >
         a shrine for my cat but make it ✨cyberpunk✨
-      </motion.div>
+      </m.div>
       <div className={styles.typing}>
         <span />
         <span />
@@ -82,7 +82,7 @@ function ChatArt() {
 function BuildArt() {
   return (
     <div className={styles.buildArt} aria-hidden>
-      <motion.div
+      <m.div
         className={styles.morph}
         animate={{
           borderRadius: ["42% 58% 70% 30% / 45% 45% 55% 55%", "70% 30% 46% 54% / 30% 39% 61% 70%", "42% 58% 70% 30% / 45% 45% 55% 55%"],
@@ -91,7 +91,7 @@ function BuildArt() {
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       />
       {[0, 1, 2, 3].map((i) => (
-        <motion.span
+        <m.span
           key={i}
           className={styles.buildBar}
           style={{ top: `${22 + i * 16}%` }}
@@ -108,7 +108,7 @@ function BuildArt() {
 function ShareArt() {
   return (
     <div className={styles.shareArt} aria-hidden>
-      <motion.div
+      <m.div
         className={styles.urlPill}
         initial={{ y: 20, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
@@ -121,9 +121,9 @@ function ShareArt() {
           <Copy className={styles.copyIcon} />
           <Check className={styles.checkIcon} />
         </span>
-      </motion.div>
+      </m.div>
       {["#00e5ff", "#ff2bd6", "#ffc23d", "#c6ff3d", "#00e5ff", "#ff2bd6"].map((c, i) => (
-        <motion.i
+        <m.i
           key={i}
           className={styles.confettiBit}
           style={{ background: c, left: `${15 + i * 14}%` }}

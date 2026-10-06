@@ -4,7 +4,7 @@ import styles from "./home.module.css";
 
 export function FinalCta() {
   return (
-    <section className="section" aria-labelledby="final-cta-title">
+    <section className="section cv-auto" aria-labelledby="final-cta-title">
       <div className="container">
         <div className={`${styles.cta} grain`}>
           <MeshBackground variant="cta" />

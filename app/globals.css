@@ -255,7 +255,6 @@
     line-height: 0.98;
     letter-spacing: -0.03em;
     word-spacing: 0.04em;
-    font-variation-settings: "wdth" 92;
   }
   .h-1 {
     font-size: clamp(2.25rem, 6vw, 4rem);
@@ -310,8 +309,8 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -0.04em;
-    height: 0.16em;
+    bottom: 0.06em;
+    height: 0.13em;
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 8'><path d='M0 4 Q5 0 10 4 T20 4 T30 4 T40 4' fill='none' stroke='%23ff2bd6' stroke-width='2.4' stroke-linecap='round'/></svg>")
       repeat-x 0 0 / auto 100%;
   }
@@ -783,6 +782,10 @@
     display: grid;
     gap: var(--gap, 1rem);
   }
+  /* Let grid children shrink below their content (e.g. nowrap URLs). */
+  .stack > * {
+    min-width: 0;
+  }
   .row {
     display: flex;
     flex-wrap: wrap;
@@ -791,6 +794,12 @@
   }
   .w-full {
     width: 100%;
+  }
+  /* Skip rendering below-the-fold sections until they near the viewport.
+     The intrinsic size estimate keeps the scrollbar stable. */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
   }
   .scrollbar-none {
     scrollbar-width: none;

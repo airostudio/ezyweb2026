@@ -63,6 +63,7 @@ export function parsePrompt(prompt: string): PromptContext {
 function findName(text: string): string | null {
   const patterns = [
     /\b(?:named|called|name is)\s+([A-Z][\w'-]+(?:\s[A-Z][\w'-]+)?)/,
+    /\b\d{1,2}[- ]?(?:year|yr)s?[- ]?old\s+(?:son|daughter|kid|boy|girl)?\s*([A-Z][a-z]+)/,
     /\bmy\s+(?:cat|dog|kitten|puppy|pet|son|daughter|kid|bird|bunny|hamster|gecko|axolotl|band|clan|squad)\s+([A-Z][\w'-]+)/,
     /\bfor\s+([A-Z][a-z]+)(?:'s)?\b/,
     /\b([A-Z][a-z]+)'s\b/,

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Repeat2, Wand2 } from "lucide-react";
 import Link from "next/link";
 import { SiteThumb } from "@/components/site-thumb";
@@ -10,10 +10,20 @@ import { compactNumber } from "@/lib/utils";
 import styles from "./gallery-card.module.css";
 
 /** Community example with a "Remix this" action that seeds the studio. */
-export function GalleryCard({ item, priority = false }: { item: GalleryItem; priority?: boolean }) {
+export function GalleryCard({
+  item,
+  priority = false,
+  headingLevel = 3,
+}: {
+  item: GalleryItem;
+  priority?: boolean;
+  /** Keep the document outline valid wherever the card is placed. */
+  headingLevel?: 2 | 3;
+}) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   const href = `/create?prompt=${encodeURIComponent(item.prompt)}&remix=${item.id}`;
   return (
-    <motion.article
+    <m.article
       className={styles.card}
       whileHover={{ y: -6, rotate: -0.6 }}
       transition={{ type: "spring", stiffness: 400, damping: 26 }}
@@ -27,9 +37,9 @@ export function GalleryCard({ item, priority = false }: { item: GalleryItem; pri
       </div>
       <div className={styles.meta}>
         <div className={styles.text}>
-          <h3 className={styles.title}>
+          <Heading className={styles.title}>
             <span aria-hidden>{item.emoji}</span> {item.title}
-          </h3>
+          </Heading>
           <p className={styles.byline}>
             {item.author} · <Repeat2 aria-hidden className={styles.inline} /> {compactNumber(item.remixes)}
             <span className="sr-only"> remixes</span>
@@ -44,6 +54,6 @@ export function GalleryCard({ item, priority = false }: { item: GalleryItem; pri
           <Wand2 aria-hidden /> Remix
         </Link>
       </div>
-    </motion.article>
+    </m.article>
   );
 }

@@ -1,0 +1,45 @@
+.page {
+  min-height: calc(100dvh - var(--header-h) - 2rem);
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.25rem;
+  padding: 3rem var(--gutter);
+  text-align: center;
+}
+.page .lead {
+  max-width: 34rem;
+}
+.emoji {
+  font-size: 5rem;
+}
+.big {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(6rem, 22vw, 12rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+.digit {
+  background: var(--grad-electric);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.spin {
+  display: inline-block;
+  font-size: 0.7em;
+  margin-inline: 0.05em;
+  animation: hop 1.2s var(--ease-spring) infinite;
+}
+@keyframes hop {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  40% {
+    transform: translateY(-30%) rotate(-12deg);
+  }
+}

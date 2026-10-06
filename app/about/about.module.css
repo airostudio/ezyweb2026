@@ -1,0 +1,82 @@
+.hero {
+  padding-top: clamp(2.5rem, 6vw, 4.5rem);
+}
+.heroGrid {
+  display: grid;
+  gap: 3rem;
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .heroGrid {
+    grid-template-columns: 1.3fr 1fr;
+  }
+}
+.collage {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  max-width: 24rem;
+  margin-inline: auto;
+}
+.tile {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: var(--r-xl);
+  font-size: clamp(2.25rem, 6vw, 3.25rem);
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  box-shadow: 0 20px 40px -26px rgb(var(--shadow-rgb) / 0.5);
+  rotate: calc((var(--i) - 2.5) * 3deg);
+  animation: float 5s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.8s);
+}
+.tile:nth-child(3n + 1) {
+  background: color-mix(in srgb, var(--cyan) 18%, var(--bg-raised));
+}
+.tile:nth-child(3n + 2) {
+  background: color-mix(in srgb, var(--magenta) 14%, var(--bg-raised));
+}
+.tile:nth-child(3n) {
+  background: color-mix(in srgb, var(--wattle) 22%, var(--bg-raised));
+}
+.timeline {
+  display: grid;
+  gap: 1.25rem;
+  counter-reset: step;
+}
+@media (min-width: 900px) {
+  .timeline {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.step {
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  padding: 1.5rem 0 0;
+  border-top: 2px solid var(--fg);
+}
+.stepN {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--magenta-ink);
+}
+.valuesSection {
+  background: var(--bg-sunken);
+  border-block: 1px solid var(--line);
+}
+.values {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+.values li {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.75rem;
+}
+.valueEmoji {
+  font-size: 2.25rem;
+}

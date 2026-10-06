@@ -4,7 +4,7 @@ import styles from "./mesh-background.module.css";
  * Animated gradient mesh + drifting particles. Pure CSS (transform/opacity
  * only), so it costs nothing on the main thread and stays at 60fps.
  */
-const PARTICLES = Array.from({ length: 18 }, (_, i) => ({
+const PARTICLES = Array.from({ length: 12 }, (_, i) => ({
   left: (i * 37) % 100,
   top: (i * 53) % 100,
   size: 2 + (i % 4),

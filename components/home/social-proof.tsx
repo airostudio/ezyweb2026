@@ -1,6 +1,6 @@
 "use client";
 
-import { animate, useInView } from "framer-motion";
+import { useInView } from "framer-motion";
 import { Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { RECENT_CREATIONS } from "@/lib/content";
@@ -18,15 +18,20 @@ export function SocialProof() {
 
   useEffect(() => {
     if (!inView) return;
+    // Tiny rAF count-up (expo-out) — avoids pulling framer's animate() into the landing bundle.
     const target = liveCount();
-    const controls = animate(target - 4_000, target, {
-      duration: 1.8,
-      ease: [0.16, 1, 0.3, 1],
-      onUpdate: (v) => setCount(Math.round(v)),
-    });
+    const from = target - 4_000;
+    const start = performance.now();
+    let raf = 0;
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / 1800);
+      setCount(Math.round(from + (target - from) * (1 - Math.pow(2, -10 * t))));
+      if (t < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
     const tick = window.setInterval(() => setCount((c) => c + 1), 2_600);
     return () => {
-      controls.stop();
+      cancelAnimationFrame(raf);
       window.clearInterval(tick);
     };
   }, [inView]);

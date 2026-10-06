@@ -7,10 +7,13 @@ import { SignJWT, jwtVerify } from "jose";
  */
 const TTL_MINUTES = 15;
 
+/** Used only outside production so the app runs with zero config locally. */
+export const DEV_SECRET = "webese-dev-only-secret-change-me-please-0123456789";
+
 export function authSecret(): string {
   const s = process.env.AUTH_SECRET;
   if (s) return s;
-  if (process.env.NODE_ENV !== "production") return "webese-dev-only-secret-change-me-please-0123456789";
+  if (process.env.NODE_ENV !== "production") return DEV_SECRET;
   throw new Error("AUTH_SECRET must be set in production");
 }
 

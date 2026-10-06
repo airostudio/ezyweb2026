@@ -8,9 +8,9 @@
 .box {
   position: relative;
   border-radius: var(--r-2xl);
+  /* Opaque-ish instead of backdrop-filter: the animated mesh behind would
+     force a re-blur every frame. */
   background: var(--glass-strong);
-  backdrop-filter: blur(20px) saturate(1.5);
-  -webkit-backdrop-filter: blur(20px) saturate(1.5);
   box-shadow:
     0 30px 80px -30px rgb(var(--shadow-rgb) / 0.55),
     0 0 0 1px var(--line);
@@ -25,12 +25,13 @@
   /* soft neon pool under the box */
   content: "";
   position: absolute;
-  inset: 30% 8% -12%;
+  inset: 10% -4% -30%;
   z-index: -1;
   border-radius: inherit;
-  background: var(--grad-electric);
-  filter: blur(50px);
-  opacity: calc(var(--glow-strength) * 0.7);
+  background:
+    radial-gradient(closest-side at 30% 50%, color-mix(in srgb, var(--cyan) 70%, transparent), transparent),
+    radial-gradient(closest-side at 70% 50%, color-mix(in srgb, var(--magenta) 70%, transparent), transparent);
+  opacity: calc(var(--glow-strength) * 0.8);
   transition: opacity 0.4s;
   pointer-events: none;
 }
