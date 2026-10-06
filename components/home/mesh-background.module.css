@@ -1,0 +1,109 @@
+.mesh {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform;
+  animation: blob 22s ease-in-out infinite;
+}
+.b1 {
+  width: 46vmax;
+  height: 46vmax;
+  left: -14vmax;
+  top: -18vmax;
+  background: var(--cyan);
+  opacity: 0.32;
+}
+.b2 {
+  width: 42vmax;
+  height: 42vmax;
+  right: -14vmax;
+  top: -6vmax;
+  background: var(--magenta);
+  opacity: 0.28;
+  animation-delay: -7s;
+  animation-duration: 26s;
+}
+.b3 {
+  width: 26vmax;
+  height: 26vmax;
+  left: 38%;
+  top: 34%;
+  background: var(--wattle);
+  opacity: 0.18;
+  animation-delay: -13s;
+  animation-duration: 30s;
+}
+[data-theme="dark"] .b1 {
+  opacity: 0.22;
+}
+[data-theme="dark"] .b2 {
+  opacity: 0.2;
+}
+[data-theme="dark"] .b3 {
+  opacity: 0.1;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 20%, transparent 75%);
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: drift-up linear infinite;
+}
+.h0 {
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+}
+.h1 {
+  background: var(--magenta);
+  box-shadow: 0 0 10px var(--magenta);
+}
+.h2 {
+  background: var(--wattle);
+  box-shadow: 0 0 10px var(--wattle);
+}
+@keyframes drift-up {
+  0% {
+    transform: translate3d(0, 30px, 0);
+    opacity: 0;
+  }
+  20%,
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(20px, -140px, 0);
+    opacity: 0;
+  }
+}
+
+.fade {
+  position: absolute;
+  inset: auto 0 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+}
+.cta .fade {
+  display: none;
+}
+.cta .grid {
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, #000 10%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, #000 10%, transparent 70%);
+}

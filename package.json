@@ -1,0 +1,39 @@
+{
+  "name": "webese",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Webese — type a vibe, get a website. The fun website builder from Ezyweb Solutions.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.9.1",
+    "@radix-ui/react-dialog": "^1.2.0",
+    "@radix-ui/react-slot": "^1.4.0",
+    "@supabase/supabase-js": "^2.117.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^14.0.0",
+    "jose": "^6.2.12",
+    "lucide-react": "^1.52.0",
+    "next": "^15.5.27",
+    "next-auth": "^5.0.0-beta.32",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-hook-form": "^7.89.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^15.5.27",
+    "typescript": "^6.0.3"
+  }
+}

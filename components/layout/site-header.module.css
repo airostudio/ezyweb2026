@@ -1,0 +1,142 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--header-h);
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    backdrop-filter 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+.scrolled {
+  background: var(--glass-strong);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  border-bottom-color: var(--line);
+}
+
+.inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: auto;
+  border-radius: var(--r-sm);
+}
+.mark {
+  width: 2rem;
+  height: 2rem;
+  transition: transform 0.4s var(--ease-spring);
+}
+.brand:hover .mark {
+  transform: rotate(-12deg) scale(1.1);
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.05em;
+}
+
+.nav {
+  display: none;
+}
+.nav ul {
+  display: flex;
+  gap: 0.25rem;
+}
+.navLink {
+  position: relative;
+  display: inline-flex;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--r-full);
+  font-size: 0.925rem;
+  font-weight: 500;
+  color: var(--fg-muted);
+  transition: color 0.2s;
+}
+.navLink:hover,
+.navLink[aria-current="page"] {
+  color: var(--fg);
+}
+.navText {
+  position: relative;
+  z-index: 1;
+}
+.pill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--bg-sunken);
+  border: 1px solid var(--line);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.hideSm {
+  display: none;
+}
+.hideXs {
+  display: none;
+}
+
+.mobile {
+  position: fixed;
+  inset: var(--header-h) 0 0;
+  padding: 1.5rem var(--gutter) 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--bg);
+  overflow-y: auto;
+}
+.mobile ul {
+  display: grid;
+  gap: 0.25rem;
+}
+.mobile li a {
+  display: block;
+  padding: 0.75rem 0;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  border-bottom: 1px solid var(--line);
+}
+.mobile li a[aria-current="page"] {
+  color: var(--magenta-ink);
+}
+
+@media (min-width: 420px) {
+  .hideXs {
+    display: inline-flex;
+  }
+}
+@media (min-width: 768px) {
+  .nav {
+    display: block;
+  }
+  .hideSm {
+    display: inline-flex;
+  }
+  .menuBtn {
+    display: none;
+  }
+  .brand {
+    margin-right: 0;
+  }
+  .nav {
+    margin-inline: auto;
+  }
+}

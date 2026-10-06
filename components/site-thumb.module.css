@@ -1,0 +1,204 @@
+.frame {
+  --t-r: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  aspect-ratio: 4 / 3.2;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--t-bg);
+  color: var(--t-text);
+  border: 1px solid color-mix(in srgb, var(--t-text) 14%, transparent);
+  box-shadow: 0 18px 40px -22px rgb(0 0 0 / 0.5);
+  container-type: inline-size;
+}
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 9px;
+  background: color-mix(in srgb, var(--t-text) 7%, var(--t-bg));
+  border-bottom: 1px solid color-mix(in srgb, var(--t-text) 10%, transparent);
+}
+.bar span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--t-text) 25%, transparent);
+}
+.url {
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 99px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: color-mix(in srgb, var(--t-text) 8%, transparent);
+  color: color-mix(in srgb, var(--t-text) 70%, transparent);
+}
+.page {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4cqi;
+  padding: 6cqi;
+  overflow: hidden;
+  text-align: center;
+}
+.blob {
+  position: absolute;
+  inset: -30% -10% auto;
+  height: 90%;
+  background:
+    radial-gradient(circle at 25% 50%, var(--t-a), transparent 55%),
+    radial-gradient(circle at 80% 40%, var(--t-a2), transparent 55%);
+  filter: blur(18px);
+  opacity: 0.45;
+}
+.emoji {
+  position: relative;
+  font-size: 14cqi;
+  line-height: 1;
+  filter: drop-shadow(0 4px 8px rgb(0 0 0 / 0.25));
+}
+.title {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 7.5cqi;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lines {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 1.6cqi;
+  width: 60%;
+}
+.lines i {
+  display: block;
+  height: 1.8cqi;
+  width: 100%;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--t-text) 22%, transparent);
+}
+.lines i:last-child {
+  width: 70%;
+}
+.cta {
+  position: relative;
+  width: 24cqi;
+  height: 6cqi;
+  border-radius: 99px;
+  background: var(--t-a);
+}
+.cards {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5cqi;
+  width: 100%;
+  margin-top: 2cqi;
+}
+.cards i {
+  display: block;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--t-r);
+  background: color-mix(in srgb, var(--t-text) 7%, var(--t-bg));
+  border: 1px solid color-mix(in srgb, var(--t-text) 12%, transparent);
+}
+.compact .page {
+  gap: 3cqi;
+}
+
+/* Style families ---------------------------------------------------------- */
+.neon .title {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  text-shadow:
+    0 0 6px var(--t-a),
+    0 0 14px var(--t-a2);
+}
+.neon .cards i {
+  border-color: color-mix(in srgb, var(--t-a) 55%, transparent);
+  box-shadow: 0 0 10px -2px var(--t-a);
+}
+.neon .page {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--t-a) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--t-a) 10%, transparent) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.brutal {
+  --t-r: 2px;
+}
+.brutal .title {
+  text-transform: uppercase;
+  font-weight: 900;
+}
+.brutal .cards i,
+.brutal .cta {
+  border-radius: 2px;
+  border: 2px solid var(--t-text);
+  box-shadow: 3px 3px 0 var(--t-text);
+}
+
+.elegant .title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.elegant .cta {
+  background: transparent;
+  border: 1px solid var(--t-text);
+}
+.elegant .blob {
+  opacity: 0.2;
+}
+
+.retro .title {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 var(--t-a2);
+  font-size: 6.5cqi;
+}
+.retro .cards i,
+.retro .cta {
+  border-radius: 0;
+  border: 2px solid var(--t-a);
+  box-shadow: 3px 3px 0 var(--t-a2);
+}
+
+.playful {
+  --t-r: 14px;
+}
+.playful .cards i {
+  border: 2px solid var(--t-text);
+  box-shadow: 2px 3px 0 var(--t-a2);
+}
+.playful .cards i:nth-child(odd) {
+  rotate: -3deg;
+}
+.playful .cards i:nth-child(even) {
+  rotate: 2deg;
+}
+
+.cosy .title {
+  font-family: Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
