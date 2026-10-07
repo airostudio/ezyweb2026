@@ -33,7 +33,7 @@ export interface Draft {
   published?: { subdomain: string; customDomain?: string; at: number };
 }
 
-const KEY = "webese:drafts:v1";
+const KEY = "aduma:drafts:v1";
 const listeners = new Set<() => void>();
 let cache: Draft[] | null = null;
 const EMPTY: Draft[] = [];

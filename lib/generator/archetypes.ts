@@ -436,7 +436,7 @@ export const FALLBACK: Archetype = {
         ] },
         { kind: "guestbook", heading: "Sign the guestbook", entries: [{ name: "First visitor", message: "this is the best site on the internet" }] },
       ],
-      footer: "Made for fun on Webese",
+      footer: "Made for fun on aduma.io",
     };
   },
 };

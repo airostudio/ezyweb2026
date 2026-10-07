@@ -3,7 +3,7 @@ import { Studio } from "@/components/create/studio";
 
 export const metadata: Metadata = {
   title: "Create",
-  description: "Describe any website in one sentence and watch Webese build it live. Free, no account needed.",
+  description: "Describe any website in one sentence and watch aduma.io build it live. Free, no account needed.",
   alternates: { canonical: "/create" },
 };
 

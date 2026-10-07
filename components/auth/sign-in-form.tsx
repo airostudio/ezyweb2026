@@ -87,8 +87,8 @@ export function SignInForm({
       ) : (
         <m.div key="form" className="stack" style={{ "--gap": "1.5rem" } as React.CSSProperties} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           <div className={styles.head}>
-            <BrandLogo style={{ height: "4.5rem", width: "auto" }} />
-            <h1 className="h-2">Welcome to Webese</h1>
+            <BrandLogo className={styles.logo} height={72} />
+            <h1 className="h-2">Welcome to aduma.io</h1>
             <p className="muted">Save your sites, publish them forever, edit from anywhere. No passwords, ever.</p>
           </div>
 

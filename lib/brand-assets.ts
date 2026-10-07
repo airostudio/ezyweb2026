@@ -1,10 +1,13 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-/** Brand SVGs as data URIs for next/og ImageResponse (build-time only). */
-export async function svgDataUri(relPath: string): Promise<string> {
-  const svg = await readFile(join(process.cwd(), relPath), "utf8");
-  return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+const MIME: Record<string, string> = { png: "image/png", svg: "image/svg+xml", jpg: "image/jpeg", webp: "image/webp" };
+
+/** Brand images as data URIs for next/og ImageResponse (build-time only). */
+export async function assetDataUri(relPath: string): Promise<string> {
+  const file = await readFile(join(process.cwd(), relPath));
+  const ext = relPath.split(".").pop()?.toLowerCase() ?? "png";
+  return `data:${MIME[ext] ?? "application/octet-stream"};base64,${file.toString("base64")}`;
 }
 
 /**

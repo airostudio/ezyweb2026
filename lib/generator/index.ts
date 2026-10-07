@@ -1,5 +1,5 @@
 /**
- * Mock webese.ai generator.
+ * Mock aduma.io generator.
  *
  * `generate()` and `edit()` are pure and synchronous; the API route wraps them
  * in a timed stream so the UI experiences realistic latency + streaming.

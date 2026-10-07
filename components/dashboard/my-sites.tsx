@@ -142,7 +142,7 @@ function SiteCard({ draft, onDelete }: { draft: Draft; onDelete: () => void }) {
           <p className={styles.siteSub}>
             {draft.published ? (
               <span className={styles.live}>
-                <Globe aria-hidden /> {draft.published.customDomain ?? `${draft.published.subdomain}.webese.ai`}
+                <Globe aria-hidden /> {draft.published.customDomain ?? `${draft.published.subdomain}.aduma.io`}
               </span>
             ) : (
               <span className="subtle">Draft</span>

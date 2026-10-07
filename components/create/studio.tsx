@@ -30,7 +30,7 @@ import { EDIT_SUGGESTIONS } from "@/lib/content";
 import { drafts, useDrafts, useHydrated, type ChatMessage, type Draft } from "@/lib/drafts";
 import { promptSchema } from "@/lib/schemas";
 import { cn, timeAgo } from "@/lib/utils";
-import { streamGenerate } from "@/lib/webese-client";
+import { streamGenerate } from "@/lib/aduma-client";
 import { GeneratingOverlay } from "./generating-overlay";
 import { PublishDialog } from "./publish-dialog";
 import styles from "./studio.module.css";
@@ -116,7 +116,7 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
             const finalMessages = [...history, msg("assistant", ev.summary)];
             const next: Draft = {
               id: current?.id ?? spec?.id ?? crypto.randomUUID(),
-              title: spec?.title ?? current?.title ?? "My Webese site",
+              title: spec?.title ?? current?.title ?? "My aduma.io site",
               emoji: spec?.emoji ?? current?.emoji ?? "✨",
               tagline: spec?.tagline ?? current?.tagline ?? "",
               prompt: current?.prompt ?? prompt,
@@ -226,7 +226,7 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
       </div>
 
       {/* ── Chat panel ─────────────────────────────────────────────────── */}
-      <section className={cn(styles.chat, mobileTab !== "chat" && styles.hideMobile)} aria-label="Chat with Webese">
+      <section className={cn(styles.chat, mobileTab !== "chat" && styles.hideMobile)} aria-label="Chat with aduma.io">
         <header className={styles.chatHead}>
           <div className={styles.chatTitle}>
             <span className={styles.chatEmoji} aria-hidden>
@@ -332,7 +332,7 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
               <span />
               <span />
               <span />
-              <p className="mono">{draft?.published ? `${draft.published.subdomain}.webese.ai` : "preview.webese.ai"}</p>
+              <p className="mono">{draft?.published ? `${draft.published.subdomain}.aduma.io` : "preview.aduma.io"}</p>
             </div>
 
             <div className={styles.frameBody}>
@@ -446,7 +446,7 @@ function ChatLog({ messages, busy, thoughts }: { messages: ChatMessage[]; busy: 
               </span>
             )}
             <p>
-              <span className="sr-only">{message.role === "user" ? "You: " : "Webese: "}</span>
+              <span className="sr-only">{message.role === "user" ? "You: " : "aduma.io: "}</span>
               {message.text}
             </p>
           </m.div>

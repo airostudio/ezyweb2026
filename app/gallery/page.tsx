@@ -3,7 +3,7 @@ import { GalleryBrowser } from "@/components/gallery/gallery-browser";
 
 export const metadata: Metadata = {
   title: "Gallery",
-  description: "Pet shrines, birthday bashes, meme museums and more. Browse sites made with Webese and remix any of them in one click.",
+  description: "Pet shrines, birthday bashes, meme museums and more. Browse sites made with aduma.io and remix any of them in one click.",
   alternates: { canonical: "/gallery" },
 };
 

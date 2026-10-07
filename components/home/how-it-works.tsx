@@ -8,7 +8,7 @@ const STEPS = [
   {
     n: "01",
     title: "Say it like you'd text a mate",
-    body: "No templates, no drag-and-drop, no 47-step wizard. Just tell Webese what you want, in your own words.",
+    body: "No templates, no drag-and-drop, no 47-step wizard. Just tell aduma.io what you want, in your own words.",
     art: <ChatArt />,
   },
   {
@@ -20,7 +20,7 @@ const STEPS = [
   {
     n: "03",
     title: "Share it with the world",
-    body: "One tap gets you a free yourname.webese.ai link. Got your own domain? Plug it in. Done. Go tell the group chat.",
+    body: "One tap gets you a free yourname.aduma.io link. Got your own domain? Plug it in. Done. Go tell the group chat.",
     art: <ShareArt />,
   },
 ];
@@ -116,7 +116,7 @@ function ShareArt() {
         transition={{ type: "spring", delay: 0.3 }}
       >
         <Link2 />
-        <span>mochi.webese.ai</span>
+        <span>mochi.aduma.io</span>
         <span className={styles.copied}>
           <Copy className={styles.copyIcon} />
           <Check className={styles.checkIcon} />

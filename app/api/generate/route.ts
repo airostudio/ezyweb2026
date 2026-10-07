@@ -11,8 +11,8 @@ export const runtime = "edge";
  * Body: { prompt: string, spec?: SiteSpec }   (spec present ⇒ follow-up edit)
  * Response: `application/x-ndjson` stream of `GenerateEvent`s, one per line.
  *
- * If WEBESE_API_URL is configured the request is proxied verbatim to the real
- * webese.ai endpoint, which must speak the same NDJSON event protocol.
+ * If ADUMA_API_URL is configured the request is proxied verbatim to the real
+ * aduma.io endpoint, which must speak the same NDJSON event protocol.
  */
 export async function POST(req: Request) {
   let body: unknown;
@@ -27,8 +27,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid request" }, { status: 422 });
   }
 
-  const upstream = process.env.WEBESE_API_URL;
-  if (upstream) return proxyToWebese(upstream, parsed.data);
+  const upstream = process.env.ADUMA_API_URL;
+  if (upstream) return proxyToAduma(upstream, parsed.data);
 
   const { prompt } = parsed.data;
   const spec = (parsed.data.spec ?? null) as SiteSpec | null;
@@ -89,18 +89,18 @@ export async function POST(req: Request) {
   });
 }
 
-/** Pass-through to the real webese.ai API once credentials exist. */
-async function proxyToWebese(url: string, payload: unknown) {
+/** Pass-through to the real aduma.io API once credentials exist. */
+async function proxyToAduma(url: string, payload: unknown) {
   const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(process.env.WEBESE_API_KEY ? { Authorization: `Bearer ${process.env.WEBESE_API_KEY}` } : {}),
+      ...(process.env.ADUMA_API_KEY ? { Authorization: `Bearer ${process.env.ADUMA_API_KEY}` } : {}),
     },
     body: JSON.stringify(payload),
   });
   if (!res.ok || !res.body) {
-    return NextResponse.json({ error: "webese.ai is having a moment. Try again shortly." }, { status: 502 });
+    return NextResponse.json({ error: "aduma.io is having a moment. Try again shortly." }, { status: 502 });
   }
   return new Response(res.body, {
     headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-store" },

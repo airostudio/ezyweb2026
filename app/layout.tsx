@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
-  keywords: ["AI website builder", "birthday website", "wedding website", "fun website", "free website", "Australia", "webese"],
+  keywords: ["AI website builder", "birthday website", "wedding website", "fun website", "free website", "Australia", "aduma", "aduma.io"],
   authors: [{ name: siteConfig.company }],
   creator: siteConfig.company,
   openGraph: {
@@ -59,7 +59,7 @@ export const viewport: Viewport = {
  * Runs before first paint: applies the saved theme (or the system preference)
  * so there is never a flash of the wrong theme.
  */
-const themeScript = `(function(){try{var t=localStorage.getItem('webese:theme');var d=t==='dark'||((!t||t==='system')&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light'}catch(e){document.documentElement.dataset.theme='dark'}})()`;
+const themeScript = `(function(){try{var t=localStorage.getItem('aduma:theme');var d=t==='dark'||((!t||t==='system')&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light'}catch(e){document.documentElement.dataset.theme='dark'}})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

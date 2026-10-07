@@ -39,7 +39,7 @@ export function SocialProof() {
   const items = [...RECENT_CREATIONS, ...RECENT_CREATIONS];
 
   return (
-    <section className={styles.proof} aria-label="Webese by the numbers">
+    <section className={styles.proof} aria-label="aduma.io by the numbers">
       <div className={`container ${styles.proofTop}`} ref={ref}>
         <div className={styles.stat}>
           <p className={styles.statNum}>

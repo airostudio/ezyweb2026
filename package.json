@@ -1,8 +1,8 @@
 {
-  "name": "webese",
+  "name": "aduma",
   "version": "0.1.0",
   "private": true,
-  "description": "Webese — type a vibe, get a website. The fun website builder from Ezyweb Solutions.",
+  "description": "aduma.io — type a vibe, get a website. The fun website builder from Ezyweb Solutions.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

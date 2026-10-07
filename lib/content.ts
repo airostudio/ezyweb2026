@@ -113,7 +113,7 @@ export const PLANS: Plan[] = [
     name: "Free",
     price: { monthly: 0, yearly: 0 },
     blurb: "For dabbling, gifting and pure chaos.",
-    features: ["3 live sites", "Free yourname.webese.ai address", "Unlimited generations & edits", "Remix anything in the gallery", "Small “Made with Webese” badge"],
+    features: ["3 live sites", "Free yourname.aduma.io address", "Unlimited generations & edits", "Remix anything in the gallery", "Small “Made with aduma.io” badge"],
     cta: "Start free",
   },
   {
@@ -121,7 +121,7 @@ export const PLANS: Plan[] = [
     name: "Pro",
     price: { monthly: 8, yearly: 6 },
     blurb: "For people who make a site for everything.",
-    features: ["25 live sites", "Connect your own domain", "Remove the Webese badge", "Password-protected sites", "Visitor stats & guestbook moderation", "Upload your own photos (10GB)"],
+    features: ["25 live sites", "Connect your own domain", "Remove the aduma.io badge", "Password-protected sites", "Visitor stats & guestbook moderation", "Upload your own photos (10GB)"],
     cta: "Go Pro",
     highlight: true,
   },
@@ -140,5 +140,5 @@ export const PRICING_FAQ = [
   { q: "Do I need an account to try it?", a: "Nope. Type a prompt and go. You only need an account to publish or save across devices — and that's one tap with Google, Apple or a magic link." },
   { q: "Can I cancel anytime?", a: "Anytime, from settings, in two clicks. Your sites drop back to the free plan limits — we never delete your stuff." },
   { q: "What about my custom domain?", a: "Pro and Unlimited plans connect any domain you own. We walk you through the DNS bit with copy-paste records, and SSL is automatic." },
-  { q: "Can I use Webese for my business?", a: "You can, but Webese is built for fun stuff. If you need a proper business site, our friends at Ezyweb Solutions have you covered." },
+  { q: "Can I use aduma.io for my business?", a: "You can, but aduma.io is built for fun stuff. If you need a proper business site, our friends at Ezyweb Solutions have you covered." },
 ];

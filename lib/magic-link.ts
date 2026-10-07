@@ -8,7 +8,7 @@ import { SignJWT, jwtVerify } from "jose";
 const TTL_MINUTES = 15;
 
 /** Used only outside production so the app runs with zero config locally. */
-export const DEV_SECRET = "webese-dev-only-secret-change-me-please-0123456789";
+export const DEV_SECRET = "aduma-dev-only-secret-change-me-please-0123456789";
 
 export function authSecret(): string {
   const s = process.env.AUTH_SECRET;
@@ -46,12 +46,12 @@ export async function sendMagicLinkEmail(email: string, url: string): Promise<bo
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      from: process.env.AUTH_EMAIL_FROM ?? "Webese <hello@webese.ai>",
+      from: process.env.AUTH_EMAIL_FROM ?? "aduma.io <hello@aduma.io>",
       to: email,
-      subject: "Your Webese sign-in link ✨",
+      subject: "Your aduma.io sign-in link ✨",
       html: `<div style="font-family:system-ui,sans-serif;max-width:460px;margin:auto;padding:32px">
         <h1 style="font-size:28px;margin:0 0 12px">G'day! 👋</h1>
-        <p style="font-size:16px;color:#444">Tap the button to sign in to Webese. This link expires in ${TTL_MINUTES} minutes.</p>
+        <p style="font-size:16px;color:#444">Tap the button to sign in to aduma.io. This link expires in ${TTL_MINUTES} minutes.</p>
         <p style="margin:28px 0"><a href="${url}" style="background:#0b0c10;color:#fff;padding:14px 22px;border-radius:999px;text-decoration:none;font-weight:600">Sign me in</a></p>
         <p style="font-size:13px;color:#888">Didn't ask for this? Ignore it — nothing happens.</p></div>`,
     }),

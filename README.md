@@ -1,11 +1,11 @@
-# Webese — type a vibe, get a website ✨
+# aduma.io — type a vibe, get a website ✨
 
 The direct-to-consumer, just-for-fun website builder from **Ezyweb Solutions**.
 Describe any site in one sentence — a dinosaur birthday invite, a neon shrine
 for your cat, a museum of cursed memes — and watch it build itself live, then
-tweak it by chatting and publish it to `yourname.webese.ai` in one tap.
+tweak it by chatting and publish it to `yourname.aduma.io` in one tap.
 
-This repo is the white-label front end for the **webese.ai** generation
+This repo is the white-label front end for the **aduma.io** generation
 engine. Out of the box it ships with a realistic **mock generator** so the
 whole product works end-to-end with zero configuration.
 
@@ -42,18 +42,18 @@ Requires Node 20+.
 | `/create`             | The studio: chat + live preview, streaming generation with a "magic in progress" takeover, follow-up edits, device previews, code view, publish flow |
 | `/gallery`            | Community examples with category filters, search, sort and "Remix" |
 | `/pricing`            | Free / Pro / Unlimited (AUD, monthly ↔ yearly) + FAQ (with FAQ JSON-LD) |
-| `/about`              | The Ezyweb → Webese story |
+| `/about`              | The Ezyweb → aduma.io story |
 | `/signin`             | Magic link + Google + Apple |
 | `/auth/verify`        | Magic-link landing (exchanges token for a session) |
 | `/dashboard`          | My Sites: live thumbnails, edit / view / delete |
 | `/dashboard/settings` | Profile (RHF + Zod), danger zone, sign out |
-| `/p/[slug]`           | Local stand-in for a published `slug.webese.ai` site |
-| `/api/generate`       | **Edge** · streams NDJSON generation events (mock or proxied to webese.ai) |
+| `/p/[slug]`           | Local stand-in for a published `slug.aduma.io` site |
+| `/api/generate`       | **Edge** · streams NDJSON generation events (mock or proxied to aduma.io) |
 | `/api/subdomain`      | **Edge** · subdomain availability check (mock) |
 | `/api/magic-link`     | **Edge** · issues signed sign-in links |
 | `/api/auth/*`         | NextAuth v5 |
 
-Plus `opengraph-image` / `twitter-image` (generated share cards), `icon.svg`,
+Plus `opengraph-image` / `twitter-image` (generated share cards), `icon.png`,
 `apple-icon`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, route and
 global error boundaries, and a custom 404.
 
@@ -62,20 +62,21 @@ global error boundaries, and a custom 404.
 ```
 app/                    routes, metadata files, error boundaries, globals.css
 components/
-  brand.tsx             ezyweb wordmark + "e" mark (pre-outlined SVG)
+  brand.tsx             aduma.io logo (theme-aware) + robot mark
   prompt-box.tsx        the hero prompt (RHF + Zod, typewriter, ⌘K, live demo)
   create/               studio, generating overlay, publish dialog
   home/ gallery/ pricing/ dashboard/ auth/ layout/
   ui/                   shadcn-style primitives (Button, Dialog, Toast) on Radix
 lib/
-  generator/            the mock webese.ai engine (see below)
-  webese-client.ts      browser NDJSON stream reader
+  generator/            the mock aduma.io engine (see below)
+  aduma-client.ts      browser NDJSON stream reader
   drafts.ts             localStorage draft store (+ optional Supabase mirror)
   schemas.ts            shared Zod (zod/mini) schemas — client + server
   analytics.ts          Plausible / PostHog shim: track("event")
   content.ts            all marketing copy, examples, gallery, plans
 auth.ts                 NextAuth config
-public/logo.svg         static brand wordmark
+public/logo26.png       original logo artwork
+public/brand/           optimised logo variants (light, dark, square mark)
 ```
 
 ---
@@ -108,14 +109,18 @@ Modules next to their components.
 
 ### Brand
 
-The **ezyweb** wordmark lives in `components/brand.tsx` (`<BrandLogo />`, plus
-`<BrandMark />` for the square "e"). Glyphs are pre-converted outlines, so no
-font download is needed for the logo. `public/logo.svg` and `app/icon.svg` are
-static copies of the same geometry for emails, OG images and favicons.
+The **aduma.io** logo lives in `components/brand.tsx`: `<BrandLogo />` renders
+the full logo and `<BrandMark />` the square robot. The source artwork is
+`public/logo26.png`; `public/brand/` holds the derived files: `aduma-logo.png`
+(light backgrounds), `aduma-logo-dark.png` (wordmark recoloured off-white for
+dark mode), and `aduma-mark.png` (square robot for app icons and badges).
+`app/icon.png` is the robot's head, cropped for the favicon. `<BrandLogo />`
+renders both theme variants and CSS shows the right one; the hidden image is
+never downloaded. To swap the logo, replace those files and keep the names.
 
 ---
 
-## The mock generator (and swapping in webese.ai)
+## The mock generator (and swapping in aduma.io)
 
 ### Protocol
 
@@ -135,7 +140,7 @@ type GenerateEvent =
 The UI only requires `done.html` (a standalone HTML document rendered in a
 sandboxed iframe). `stage`, `thought` and `html` events are optional sugar
 for the generating animation. `spec` is only needed for local edits, so
-return `null` if webese.ai manages state server-side.
+return `null` if aduma.io manages state server-side.
 
 ### How the mock works
 
@@ -150,29 +155,29 @@ gallery"*, *"make it pink"*, *"fancier font"*, *"call it Max's Dino Party"* or
 
 ### Swapping to the real API
 
-**Option A — zero code (recommended).** If webese.ai speaks the protocol
+**Option A — zero code (recommended).** If aduma.io speaks the protocol
 above, set:
 
 ```bash
-WEBESE_API_URL=https://api.webese.ai/v1/generate
-WEBESE_API_KEY=sk_live_…
+ADUMA_API_URL=https://api.aduma.io/v1/generate
+ADUMA_API_KEY=sk_live_…
 ```
 
 `/api/generate` then proxies the request body verbatim (with
-`Authorization: Bearer $WEBESE_API_KEY`) and streams the response straight
+`Authorization: Bearer $ADUMA_API_KEY`) and streams the response straight
 back. The browser never sees the key.
 
 **Option B — adapter.** If the upstream format differs (say SSE, or plain
-JSON), edit `proxyToWebese()` in `app/api/generate/route.ts` to translate it
+JSON), edit `proxyToAduma()` in `app/api/generate/route.ts` to translate it
 into `GenerateEvent`s. That function is the only place that needs to change.
 
 Also wire up:
 
 - `app/api/subdomain/route.ts` → the real availability lookup.
 - The publish step (`ClaimStep.onSubmit` in `components/create/publish-dialog.tsx`)
-  → a webese.ai publish endpoint (it currently saves locally).
-- `app/p/[slug]` → fetch published HTML from webese.ai, or serve
-  `*.webese.ai` via wildcard-domain middleware.
+  → a aduma.io publish endpoint (it currently saves locally).
+- `app/p/[slug]` → fetch published HTML from aduma.io, or serve
+  `*.aduma.io` via wildcard-domain middleware.
 
 ---
 
@@ -233,7 +238,7 @@ See `.env.example`. Everything is optional locally.
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | – | Google sign-in |
 | `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | – | Apple sign-in |
 | `RESEND_API_KEY`, `AUTH_EMAIL_FROM` | For magic links | Email delivery |
-| `WEBESE_API_URL`, `WEBESE_API_KEY` | – | Real generation backend |
+| `ADUMA_API_URL`, `ADUMA_API_KEY` | – | Real generation backend |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | – | Draft sync |
 | `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`, `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST` | – | Analytics |
 

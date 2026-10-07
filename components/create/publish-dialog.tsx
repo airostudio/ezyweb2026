@@ -245,7 +245,7 @@ function LiveStep({ draft, onDomain }: { draft: Draft; onDomain: () => void }) {
         </button>
         <a
           className="btn btn-outline btn-icon"
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I made ${draft.title} ${draft.emoji} with @webese_ai`)}&url=${encodeURIComponent(publicUrl)}`}
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I made ${draft.title} ${draft.emoji} with @aduma_io`)}&url=${encodeURIComponent(publicUrl)}`}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Share on X"
@@ -313,7 +313,7 @@ function DomainStep({ draft, onBack, onSaved }: { draft: Draft; onBack: () => vo
     <div className="stack" style={{ "--gap": "1.1rem" } as React.CSSProperties}>
       <div>
         <DialogTitle>Bring your own domain</DialogTitle>
-        <DialogDescription>Already own a domain? Point it at Webese and we&apos;ll handle the rest, including SSL.</DialogDescription>
+        <DialogDescription>Already own a domain? Point it at aduma.io and we&apos;ll handle the rest, including SSL.</DialogDescription>
       </div>
 
       <form onSubmit={onSubmit} noValidate className="field">
@@ -360,9 +360,9 @@ function DomainStep({ draft, onBack, onSaved }: { draft: Draft; onBack: () => vo
             </div>
             <div role="row">
               <span role="cell">TXT</span>
-              <span role="cell">_webese</span>
+              <span role="cell">_aduma</span>
               <span role="cell" className="mono">
-                webese-verify={draft.id.slice(0, 12)}
+                aduma-verify={draft.id.slice(0, 12)}
               </span>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
-import { googleFont, svgDataUri } from "@/lib/brand-assets";
+import { assetDataUri, googleFont } from "@/lib/brand-assets";
 
-export const alt = "Webese by ezyweb — Type a vibe. Get a website.";
+export const alt = "aduma.io — Type a vibe. Get a website.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -16,7 +16,7 @@ const CARDS = [
 /** Shareable OG card: logo, big type, neon glow and a stack of example sites. */
 export default async function OgImage() {
   const [logo, display, body] = await Promise.all([
-    svgDataUri("public/logo.svg"),
+    assetDataUri("public/brand/aduma-logo-dark.png"),
     googleFont("Bricolage Grotesque", 800, HEADLINE.join("") + CARDS.map((c) => c.t).join("")),
     googleFont("Bricolage Grotesque", 500, SUB),
   ]);
@@ -68,7 +68,7 @@ export default async function OgImage() {
           </div>
         ))}
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 64px", gap: 14, width: 760 }}>
-          <img src={logo} width={300} height={120} alt="" style={{ marginLeft: -12 }} />
+          <img src={logo} width={334} height={120} alt="" style={{ marginLeft: -6 }} />
           <div style={{ display: "flex", flexDirection: "column", color: "#f4f2ec", fontSize: 84, fontWeight: 800, lineHeight: 1, letterSpacing: -3 }}>
             <span>{HEADLINE[0]}</span>
             <span style={{ backgroundImage: "linear-gradient(90deg,#06d6ff,#f7a9d6 55%,#d21fd8)", backgroundClip: "text", color: "transparent" }}>

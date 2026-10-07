@@ -110,7 +110,7 @@ export function applyEdit(input: SiteSpec, instruction: string): { spec: SiteSpe
       changes.push("Added an RSVP form");
     }
     if (/guestbook|comments|messages|shoutbox/.test(text) && !has("guestbook")) {
-      spec.sections.push({ kind: "guestbook", id: newId(), heading: "Guestbook", entries: [{ name: "Webese", message: "Be the first to sign!" }] });
+      spec.sections.push({ kind: "guestbook", id: newId(), heading: "Guestbook", entries: [{ name: "aduma.io", message: "Be the first to sign!" }] });
       changes.push("Added a guestbook");
     }
     if (/faq|questions/.test(text) && !has("faq")) {

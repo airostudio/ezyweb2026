@@ -44,7 +44,7 @@ export function Hero() {
         </h1>
 
         <p className={`lead ${styles.sub} ${styles.rise}`} style={{ "--d": "220ms" } as React.CSSProperties}>
-          Birthday invites, pet shrines, meme museums, wedding pages. Describe it in one sentence and watch Webese build it
+          Birthday invites, pet shrines, meme museums, wedding pages. Describe it in one sentence and watch aduma.io build it
           live — in seconds. Free, no account, no worries.
         </p>
 

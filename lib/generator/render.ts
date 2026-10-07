@@ -36,7 +36,7 @@ ${styleCss(t.style)}
 <main>
 ${body}
 </main>
-<footer class="foot"><p>${esc(spec.footer)}</p><p class="made">Made with <a href="https://webese.ai" target="_blank" rel="noopener">Webese</a> ✦</p></footer>
+<footer class="foot"><p>${esc(spec.footer)}</p><p class="made">Made with <a href="https://aduma.io" target="_blank" rel="noopener">aduma.io</a> ✦</p></footer>
 <script>
 ${runtimeJs(t.confetti, [t.accent, t.accent2, "#ffc23d", "#ffffff"])}
 </script>

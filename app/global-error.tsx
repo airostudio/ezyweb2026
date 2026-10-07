@@ -24,7 +24,7 @@ export default function GlobalError({ reset }: { error: Error; reset: () => void
           <p style={{ fontSize: "4rem", margin: 0 }} aria-hidden>
             🛸
           </p>
-          <h1 style={{ fontSize: "2.25rem", letterSpacing: "-0.03em" }}>Webese has left the building (briefly)</h1>
+          <h1 style={{ fontSize: "2.25rem", letterSpacing: "-0.03em" }}>aduma.io has left the building (briefly)</h1>
           <p style={{ color: "#b3b5bd" }}>A big error happened. Refreshing usually sorts it.</p>
           <button
             type="button"

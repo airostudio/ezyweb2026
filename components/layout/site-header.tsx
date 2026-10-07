@@ -45,7 +45,7 @@ export function SiteHeader() {
     <header className={cn(styles.header, (scrolled || open) && styles.scrolled)}>
       <div className={cn("container", styles.inner)}>
         <Link href="/" className={styles.brand}>
-          <BrandLogo className={styles.logo} title="ezyweb — home" />
+          <BrandLogo className={styles.logo} title="aduma.io — home" height={56} />
         </Link>
 
         <nav aria-label="Main" className={styles.nav}>

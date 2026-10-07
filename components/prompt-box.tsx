@@ -28,7 +28,7 @@ interface PromptBoxProps {
 }
 
 /**
- * The Webese prompt. Keyboard:
+ * The aduma.io prompt. Keyboard:
  *   Enter → create · Shift+Enter → newline · ⌘/Ctrl+K or "/" → focus
  */
 export function PromptBox({ variant = "hero", starters = true, demo = true, autoFocus, onSubmitPrompt }: PromptBoxProps) {

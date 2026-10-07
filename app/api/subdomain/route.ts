@@ -4,12 +4,12 @@ import { subdomainSchema } from "@/lib/schemas";
 export const runtime = "edge";
 
 /** Names we never hand out, plus a few "already taken" ones for realism. */
-const RESERVED = new Set(["www", "app", "api", "admin", "mail", "help", "support", "blog", "status", "webese", "ezyweb", "login", "signin", "dashboard"]);
+const RESERVED = new Set(["www", "app", "api", "admin", "mail", "help", "support", "blog", "status", "aduma", "webese", "ezyweb", "login", "signin", "dashboard"]);
 const TAKEN = new Set(["mochi", "test", "party", "wedding", "cat", "dog", "birthday", "max"]);
 
 /**
  * GET /api/subdomain?name=foo → { available, reason? }
- * Mock availability check. Swap for a real lookup against webese.ai.
+ * Mock availability check. Swap for a real lookup against aduma.io.
  */
 export async function GET(req: Request) {
   const name = new URL(req.url).searchParams.get("name") ?? "";

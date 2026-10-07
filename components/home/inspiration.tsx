@@ -20,7 +20,7 @@ export function Inspiration() {
     <section className={`section cv-auto ${styles.inspo}`} aria-labelledby="inspo-title">
       <div className={`container ${styles.inspoHead}`}>
         <div className="section-head" style={{ marginBottom: 0 }}>
-          <p className="eyebrow">Made with Webese</p>
+          <p className="eyebrow">Made with aduma.io</p>
           <h2 id="inspo-title" className="h-1">
             Steal this idea. <br />
             <span className="text-gradient">We insist.</span>

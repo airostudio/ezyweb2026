@@ -3,7 +3,7 @@
  *
  * The mock generator produces a `SiteSpec` from a prompt, follow-up edits
  * transform the spec, and `renderSite()` turns it into a standalone HTML
- * document. When the real webese.ai API is wired in, it can return HTML
+ * document. When the real aduma.io API is wired in, it can return HTML
  * directly; the spec is optional and only used for local edits/thumbnails.
  */
 

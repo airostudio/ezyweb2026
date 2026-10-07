@@ -22,9 +22,7 @@
   border-radius: var(--r-sm);
 }
 .logo {
-  height: 3.5rem;
-  width: auto;
-  margin-left: -0.35rem;
+  height: 4rem;
 }
 .colTitle {
   font-family: var(--font-mono);
@@ -48,15 +46,21 @@
 }
 /* Oversized wordmark that bleeds off the bottom edge */
 .giant {
-  margin: 2.5rem auto -14%;
-  max-width: 68rem;
-  opacity: 0.95;
+  margin-top: 3rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(4.5rem, 21vw, 19rem);
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  text-align: center;
+  white-space: nowrap;
+  background: var(--grad-electric);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   user-select: none;
   pointer-events: none;
-}
-.giant svg {
-  width: 100%;
-  height: auto;
+  translate: 0 0.12em;
 }
 .bottom {
   position: relative;

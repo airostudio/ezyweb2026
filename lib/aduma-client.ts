@@ -4,7 +4,7 @@ import type { GenerateEvent, SiteSpec } from "@/lib/generator/types";
 
 /**
  * Calls POST /api/generate and yields each NDJSON event as it arrives.
- * Works for both the mock and the real webese.ai backend (same protocol).
+ * Works for both the mock and the real aduma.io backend (same protocol).
  */
 export async function* streamGenerate(
   input: { prompt: string; spec?: SiteSpec | null },

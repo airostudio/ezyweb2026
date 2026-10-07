@@ -11,7 +11,7 @@ import { settingsSchema, type SettingsValues } from "@/lib/schemas";
 import { siteConfig } from "@/lib/site";
 import styles from "./dashboard.module.css";
 
-const PROFILE_KEY = "webese:profile";
+const PROFILE_KEY = "aduma:profile";
 
 /**
  * Profile settings. Persisted to localStorage in this build; swap the save

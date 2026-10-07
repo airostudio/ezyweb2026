@@ -5,7 +5,7 @@ import styles from "@/components/auth/auth.module.css";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Sign in to Webese with a magic link, Google or Apple. No passwords, ever.",
+  description: "Sign in to aduma.io with a magic link, Google or Apple. No passwords, ever.",
   robots: { index: false },
 };
 

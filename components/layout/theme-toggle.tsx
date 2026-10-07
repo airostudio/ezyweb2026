@@ -5,7 +5,7 @@ import { Laptop, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type Pref = "system" | "light" | "dark";
-const KEY = "webese:theme";
+const KEY = "aduma:theme";
 const ORDER: Pref[] = ["system", "light", "dark"];
 const META: Record<Pref, { icon: typeof Sun; label: string }> = {
   system: { icon: Laptop, label: "System theme" },

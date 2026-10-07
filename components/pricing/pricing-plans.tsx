@@ -85,7 +85,7 @@ export function PricingPlans() {
       </div>
 
       <p className={styles.promise}>
-        <span aria-hidden>🤝</span> The Webese promise: we never delete your sites, never sell your data, and never hide the cancel button.
+        <span aria-hidden>🤝</span> The aduma.io promise: we never delete your sites, never sell your data, and never hide the cancel button.
       </p>
     </div>
   );

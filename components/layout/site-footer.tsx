@@ -9,7 +9,7 @@ import styles from "./site-footer.module.css";
 const COLUMNS = [
   { title: "Make", links: [{ href: "/create", label: "Create a site" }, { href: "/gallery", label: "Gallery" }, { href: "/pricing", label: "Pricing" }] },
   { title: "You", links: [{ href: "/dashboard", label: "My sites" }, { href: "/dashboard/settings", label: "Settings" }, { href: "/signin", label: "Sign in" }] },
-  { title: "Us", links: [{ href: "/about", label: "About" }, { href: "mailto:hello@webese.ai", label: "Say g'day" }] },
+  { title: "Us", links: [{ href: "/about", label: "About" }, { href: "mailto:hello@aduma.io", label: "Say g'day" }] },
 ];
 
 export function SiteFooter() {
@@ -23,7 +23,7 @@ export function SiteFooter() {
         <div className={styles.top}>
           <div className={styles.brandCol}>
             <Link href="/" className={styles.brand}>
-              <BrandLogo className={styles.logo} title="ezyweb — home" />
+              <BrandLogo className={styles.logo} title="aduma.io — home" height={64} />
             </Link>
             <p className="muted">Websites for the fun stuff. Made with love (and a lot of flat whites) in Australia.</p>
           </div>
@@ -40,9 +40,9 @@ export function SiteFooter() {
             </nav>
           ))}
         </div>
-        <div className={styles.giant} aria-hidden>
-          <BrandLogo title="" />
-        </div>
+        <p className={styles.giant} aria-hidden>
+          aduma.io
+        </p>
         <div className={styles.bottom}>
           <p>
             © {new Date().getFullYear()} {siteConfig.company}. All rights reserved.

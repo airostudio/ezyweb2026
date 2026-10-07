@@ -6,7 +6,7 @@ import { PricingTeaser } from "@/components/home/pricing-teaser";
 import { SocialProof } from "@/components/home/social-proof";
 import { siteConfig } from "@/lib/site";
 
-/** JSON-LD so search engines understand what Webese is. */
+/** JSON-LD so search engines understand what aduma.io is. */
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",

@@ -24,7 +24,7 @@ export function SiteThumb({
         <span />
         <span />
         <span />
-        <p className={styles.url}>{slugify(item.id, 18)}.webese.ai</p>
+        <p className={styles.url}>{slugify(item.id, 18)}.aduma.io</p>
       </div>
       <div className={styles.page}>
         <div className={styles.blob} />
