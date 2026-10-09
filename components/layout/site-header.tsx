@@ -42,6 +42,7 @@ export function SiteHeader() {
   const isActive = (href: string) => pathname === href || pathname?.startsWith(`${href}/`);
 
   return (
+    <>
     <header className={cn(styles.header, (scrolled || open) && styles.scrolled)}>
       <div className={cn("container", styles.inner)}>
         <Link href="/" className={styles.brand}>
@@ -89,7 +90,10 @@ export function SiteHeader() {
           </button>
         </div>
       </div>
+    </header>
 
+      {/* Rendered outside <header>: the header's backdrop-filter would become
+          the containing block for this fixed menu and clip it to the bar. */}
       <AnimatePresence>
         {open && (
           <m.nav
@@ -118,6 +122,6 @@ export function SiteHeader() {
           </m.nav>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }
