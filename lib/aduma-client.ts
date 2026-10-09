@@ -7,7 +7,7 @@ import type { GenerateEvent, SiteSpec } from "@/lib/generator/types";
  * Works for both the mock and the real aduma.io backend (same protocol).
  */
 export async function* streamGenerate(
-  input: { prompt: string; spec?: SiteSpec | null },
+  input: { prompt: string; siteId?: string; spec?: SiteSpec | null; html?: string },
   signal?: AbortSignal,
 ): AsyncGenerator<GenerateEvent> {
   const res = await fetch("/api/generate", {
@@ -18,8 +18,8 @@ export async function* streamGenerate(
   });
 
   if (!res.ok || !res.body) {
-    const data = (await res.json().catch(() => null)) as { error?: string } | null;
-    yield { type: "error", message: data?.error ?? "Something went sideways. Try again?" };
+    const data = (await res.json().catch(() => null)) as { error?: string; code?: "quota" | "plan" } | null;
+    yield { type: "error", message: data?.error ?? "Something went sideways. Try again?", code: data?.code };
     return;
   }
 

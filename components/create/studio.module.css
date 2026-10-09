@@ -831,3 +831,14 @@
 .back {
   justify-self: start;
 }
+
+.sitesUsed {
+  font-size: 0.8125rem;
+  color: var(--fg-subtle);
+}
+.sitesUsed a {
+  font-weight: 600;
+  color: var(--magenta-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

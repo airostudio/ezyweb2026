@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Apple from "next-auth/providers/apple";
 import { DEV_SECRET, verifyMagicToken } from "@/lib/magic-link";
+import { planForEmail } from "@/lib/plans";
 
 /**
  * NextAuth v5 config.
@@ -42,4 +43,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   session: { strategy: "jwt" },
   pages: { signIn: "/signin", verifyRequest: "/signin?sent=1", error: "/signin" },
+  callbacks: {
+    // Expose the user's plan to the client (resolved fresh on each session read).
+    session({ session, token }) {
+      if (session.user) session.user.plan = planForEmail(token.email);
+      return session;
+    },
+  },
 });

@@ -15,6 +15,7 @@ import { track } from "@/lib/analytics";
 import { drafts, type Draft } from "@/lib/drafts";
 import { customDomainSchema, subdomainSchema } from "@/lib/schemas";
 import { siteConfig } from "@/lib/site";
+import { usePlan } from "@/lib/use-plan";
 import { cn, slugify } from "@/lib/utils";
 import styles from "./studio.module.css";
 
@@ -69,6 +70,7 @@ export function PublishDialog({
 /* ── Step 1: claim a free subdomain ───────────────────────────────────── */
 
 function ClaimStep({ draft, onDone }: { draft: Draft; onDone: (d: Draft) => void }) {
+  const plan = usePlan();
   const [avail, setAvail] = useState<Availability>({ state: "idle" });
   const [publishing, setPublishing] = useState(false);
   const form = useForm<{ subdomain: string }>({
@@ -110,7 +112,7 @@ function ClaimStep({ draft, onDone }: { draft: Draft; onDone: (d: Draft) => void
     if (avail.state !== "ok") return;
     setPublishing(true);
     await new Promise((r) => setTimeout(r, 900)); // pretend to deploy to the edge
-    const next: Draft = { ...draft, published: { subdomain, at: Date.now() } };
+    const next: Draft = { ...draft, published: { subdomain, at: Date.now(), badge: !plan.removeBadge } };
     drafts.save(next);
     track("site_published", { subdomain });
     setPublishing(false);
@@ -186,6 +188,7 @@ function ClaimStep({ draft, onDone }: { draft: Draft; onDone: (d: Draft) => void
 
 function LiveStep({ draft, onDomain }: { draft: Draft; onDomain: () => void }) {
   const { data: session } = useSession();
+  const plan = usePlan();
   const toast = useToast();
   const [copied, setCopied] = useState(false);
   const pub = draft.published!;
@@ -254,16 +257,28 @@ function LiveStep({ draft, onDomain }: { draft: Draft; onDomain: () => void }) {
         </a>
       </div>
 
-      <button type="button" className={styles.domainCta} onClick={onDomain}>
-        <span className={styles.domainCtaIcon} aria-hidden>
-          🌏
-        </span>
-        <span>
-          <strong>Use your own domain</strong>
-          <span className="subtle"> — like {slugify(draft.title, 14)}.com.au</span>
-        </span>
-        <span className="badge">Pro</span>
-      </button>
+      {plan.customDomain ? (
+        <button type="button" className={styles.domainCta} onClick={onDomain}>
+          <span className={styles.domainCtaIcon} aria-hidden>
+            🌏
+          </span>
+          <span>
+            <strong>Use your own domain</strong>
+            <span className="subtle"> — like {slugify(draft.title, 14)}.com.au</span>
+          </span>
+        </button>
+      ) : (
+        <Link href="/pricing" className={styles.domainCta} onClick={() => track("upgrade_clicked", { from: "custom-domain" })}>
+          <span className={styles.domainCtaIcon} aria-hidden>
+            🌏
+          </span>
+          <span>
+            <strong>Want your own domain?</strong>
+            <span className="subtle"> Free sites share on a {siteConfig.publishDomain} link. Go Pro for {slugify(draft.title, 14)}.com.au</span>
+          </span>
+          <span className="badge">Pro</span>
+        </Link>
+      )}
 
       {!session?.user && (
         <div className={styles.saveNudge}>

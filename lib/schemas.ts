@@ -14,6 +14,9 @@ export const promptSchema = z.string().check(
 
 export const generateRequestSchema = z.object({
   prompt: promptSchema,
+  siteId: z.optional(z.string().check(z.maxLength(64))),
+  // Current page for LLM edits (~30k tokens max, keeps edit cost bounded)
+  html: z.optional(z.string().check(z.maxLength(120_000, "That page is too big to edit in one go."))),
   // The spec is produced by our own generator; we only sanity-check its shape.
   spec: z.nullish(
     z.looseObject({

@@ -79,6 +79,7 @@ export function PricingPlans() {
                   </li>
                 ))}
               </ul>
+              {p.fineprint && <p className={styles.fineprint}>{p.fineprint}</p>}
             </m.article>
           );
         })}

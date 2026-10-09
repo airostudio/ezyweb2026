@@ -41,7 +41,7 @@ Requires Node 20+.
 | `/`                   | Landing: animated mesh hero, prompt box with typewriter examples, live demo, social proof, how-it-works, remixable inspiration strip, pricing teaser, final CTA |
 | `/create`             | The studio: chat + live preview, streaming generation with a "magic in progress" takeover, follow-up edits, device previews, code view, publish flow |
 | `/gallery`            | Community examples with category filters, search, sort and "Remix" |
-| `/pricing`            | Free / Pro / Unlimited (AUD, monthly ↔ yearly) + FAQ (with FAQ JSON-LD) |
+| `/pricing`            | Free / Pro / Bottomless (AUD, monthly ↔ yearly) + FAQ (with FAQ JSON-LD) |
 | `/about`              | The Ezyweb → aduma.io story |
 | `/signin`             | Magic link + Google + Apple |
 | `/auth/verify`        | Magic-link landing (exchanges token for a session) |
@@ -120,66 +120,97 @@ never downloaded. To swap the logo, replace those files and keep the names.
 
 ---
 
-## The mock generator (and swapping in aduma.io)
+## The AI site builder
 
-### Protocol
+### Engines
 
-`POST /api/generate` with `{ prompt: string, spec?: SiteSpec }`
-(`spec` present ⇒ follow-up edit) responds with `application/x-ndjson`, one
-JSON event per line:
+`POST /api/generate` picks an engine automatically (override with `AI_PROVIDER`):
+
+| Priority | When | Engine |
+| -------- | ---- | ------ |
+| 1 | `ADUMA_API_URL` set | Proxy to a hosted aduma.io engine (same NDJSON protocol) |
+| 2 | `ANTHROPIC_API_KEY` set | **Claude Haiku 5.5** (`claude-haiku-5-5`), the cheapest Claude model |
+| 3 | `OPENAI_API_KEY` set | **GPT-5.6 Luna** (`gpt-5.6-luna`), OpenAI's budget tier |
+| 4 | nothing set | Built-in mock generator (free, offline, great for dev) |
+
+**Every plan uses the same cheap model.** Plans differ only in limits and
+features (below), never in model quality.
+
+Each build is one streamed call (`lib/ai/anthropic.ts`, `lib/ai/openai.ts`):
+
+- **System prompt** (`lib/ai/prompt.ts`): one single-page site, hand-rolled CSS
+  in one `<style>`, no frameworks, CDNs, external scripts or images, mobile-first,
+  accessible, under ~22 KB. It's frozen text, marked cacheable so repeat builds
+  read it from the prompt cache.
+- **Cost controls:** `max_tokens` is capped at 12,000 (`lib/ai/shared.ts`),
+  with low reasoning effort. On Haiku 5.5 a typical build costs a fraction of
+  a cent: about 2k input tokens plus 6–8k output tokens. Edits resend the
+  current page, capped at 120k characters.
+- **Clean-up** (`cleanHtml`): fences and chatter are stripped. External
+  scripts, iframes and non-font stylesheets are removed, so pages stay
+  self-contained. The title and description are extracted for cards.
+- Refusals, rate limits and auth errors become friendly messages. A failed
+  build doesn't count against the user's quota.
+
+### Plans and budget guards
+
+Defined once in `lib/plans.ts`. The pricing page, studio and API all read from it.
+
+| | Free ($0) | Pro ($8/mo, $6 yearly) | Bottomless ($12/mo, $9 yearly) |
+|---|---|---|---|
+| Sites kept | 3 | 10 | 50 (fair use, shown as "bottomless") |
+| New builds / day | 6 | 25 | 40 |
+| Edits per site | 15 | 40 | 60 |
+| Share on `name.aduma.io` | ✓ | ✓ | ✓ |
+| Custom domain | – | ✓ | ✓ |
+| Remove badge | – | ✓ | ✓ |
+| View / copy code | – | ✓ | ✓ |
+
+- **Site count** is enforced in the studio: the user sees a "your sites are
+  full" dialog with options to delete a site or upgrade.
+- **Builds and edits** are enforced server-side in `/api/generate` before any
+  tokens are spent (`lib/quota.ts`). Usage is keyed by the signed-in email, or
+  by IP for guests. Configure **Upstash Redis** for production; the in-memory
+  fallback only counts per server instance.
+- **"Bottomless"** is deliberately not called "unlimited". Under Australian
+  Consumer Law an "unlimited" claim has to be literally true, so the fair-use
+  cap is disclosed on the pricing card and in the FAQ.
+- **Plan lookup:** with no billing yet, everyone is on Free unless listed in
+  `PLAN_OVERRIDES`. Replace `planForEmail()` with your Stripe or DB lookup.
+
+### Source protection
+
+Published pages (`/p/[slug]`) inject a deterrent script (`lib/protect.ts`). It
+blocks right-click, dragging and the view-source, save and devtools shortcuts,
+both inside the site and on the host page. The site HTML is loaded
+client-side into a sandboxed frame, so the browser's "view source" shows only
+the app shell. On Free, the studio's Code view is locked too.
+
+This stops casual copying. It can't stop a determined person, because
+anything a browser renders can be extracted, so treat it as a deterrent, not DRM.
+
+### Event protocol
+
+`POST /api/generate` with `{ prompt, siteId?, spec?, html? }` (`siteId` plus
+`html`/`spec` means an edit) responds with `application/x-ndjson`:
 
 ```ts
 type GenerateEvent =
   | { type: "stage"; stage: number; label: string }      // progress (0–4)
   | { type: "thought"; text: string }                    // narration
   | { type: "html"; chunk: string }                      // streamed markup
-  | { type: "done"; spec: SiteSpec | null; html: string; summary: string }
-  | { type: "error"; message: string };
+  | { type: "done"; spec: SiteSpec | null; html: string; summary: string; title?: string | null; tagline?: string | null }
+  | { type: "error"; message: string; code?: "quota" | "plan" };
 ```
 
-The UI only requires `done.html` (a standalone HTML document rendered in a
-sandboxed iframe). `stage`, `thought` and `html` events are optional sugar
-for the generating animation. `spec` is only needed for local edits, so
-return `null` if aduma.io manages state server-side.
+Quota rejections return HTTP 429 `{ error, code: "quota" }` before streaming starts.
 
-### How the mock works
+### The mock engine
 
-`lib/generator/` parses the prompt (names, ages, topics, vibes), picks an
-**archetype** (birthday, wedding, pet shrine, gaming clan, meme museum,
-portfolio, band, travel, recipes, event, space, or a catch-all), builds a
-structured `SiteSpec` with one of nine hand-tuned themes, and renders it to a
-self-contained, interactive HTML page: countdowns, RSVP, guestbook, FAQ,
-scroll reveals and confetti. Follow-ups like *"make it darker"*, *"add a photo
-gallery"*, *"make it pink"*, *"fancier font"*, *"call it Max's Dino Party"* or
-*"remove the countdown"* transform the spec.
-
-### Swapping to the real API
-
-**Option A — zero code (recommended).** If aduma.io speaks the protocol
-above, set:
-
-```bash
-ADUMA_API_URL=https://api.aduma.io/v1/generate
-ADUMA_API_KEY=sk_live_…
-```
-
-`/api/generate` then proxies the request body verbatim (with
-`Authorization: Bearer $ADUMA_API_KEY`) and streams the response straight
-back. The browser never sees the key.
-
-**Option B — adapter.** If the upstream format differs (say SSE, or plain
-JSON), edit `proxyToAduma()` in `app/api/generate/route.ts` to translate it
-into `GenerateEvent`s. That function is the only place that needs to change.
-
-Also wire up:
-
-- `app/api/subdomain/route.ts` → the real availability lookup.
-- The publish step (`ClaimStep.onSubmit` in `components/create/publish-dialog.tsx`)
-  → a aduma.io publish endpoint (it currently saves locally).
-- `app/p/[slug]` → fetch published HTML from aduma.io, or serve
-  `*.aduma.io` via wildcard-domain middleware.
-
----
+`lib/generator/` parses the prompt (names, ages, topics, vibes) and picks one of
+12 archetypes and 9 themes. It renders an interactive page and supports
+follow-up edits such as "make it darker", "add a photo gallery" or "make it
+pink". It's what runs when no AI key is configured.
 
 ## Auth
 
@@ -221,7 +252,7 @@ publish, custom domains, sign-in starts and upgrade clicks.
 
 ## Payments
 
-Upgrade buttons route to `/dashboard?upgrade=pro|unlimited`, which shows a
+Upgrade buttons route to `/dashboard?upgrade=pro|bottomless`, which shows a
 placeholder dialog. Drop a Stripe Checkout session creation into that flow
 when you're ready.
 
@@ -238,7 +269,12 @@ See `.env.example`. Everything is optional locally.
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | – | Google sign-in |
 | `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | – | Apple sign-in |
 | `RESEND_API_KEY`, `AUTH_EMAIL_FROM` | For magic links | Email delivery |
-| `ADUMA_API_URL`, `ADUMA_API_KEY` | – | Real generation backend |
+| `ANTHROPIC_API_KEY` (+ `ANTHROPIC_MODEL`) | One AI key for real builds | Claude Haiku 5.5 builder |
+| `OPENAI_API_KEY` (+ `OPENAI_MODEL`, `OPENAI_REASONING_EFFORT`) | One AI key for real builds | GPT-5.6 Luna builder |
+| `AI_PROVIDER` | – | Force `anthropic`, `openai` or `mock` |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | **Yes, with a paid model** | Cross-instance quota counters |
+| `PLAN_OVERRIDES` | – | Grant Pro/Bottomless by email until billing exists |
+| `ADUMA_API_URL`, `ADUMA_API_KEY` | – | Proxy to a hosted aduma.io engine |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | – | Draft sync |
 | `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`, `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST` | – | Analytics |
 

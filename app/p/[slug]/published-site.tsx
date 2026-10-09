@@ -2,14 +2,19 @@
 
 import { m } from "framer-motion";
 import Link from "next/link";
+import { useEffect, useMemo } from "react";
 import { BrandMark } from "@/components/brand";
 import { drafts, useDrafts, useHydrated } from "@/lib/drafts";
+import { protectDocument, protectHtml } from "@/lib/protect";
 import styles from "./published.module.css";
 
 export function PublishedSite({ slug }: { slug: string }) {
   const hydrated = useHydrated();
   useDrafts(); // subscribe so edits in another tab show up live
   const draft = hydrated ? drafts.bySubdomain(slug) : undefined;
+  // Visitor-facing pages get the view-source deterrent (frame + host page).
+  const html = useMemo(() => (draft ? protectHtml(draft.html) : ""), [draft]);
+  useEffect(() => protectDocument(document), []);
 
   if (!hydrated) return <div className={styles.full} aria-busy="true" />;
 
@@ -30,7 +35,8 @@ export function PublishedSite({ slug }: { slug: string }) {
 
   return (
     <div className={styles.full}>
-      <iframe title={draft.title} srcDoc={draft.html} sandbox="allow-scripts allow-forms allow-popups" className={styles.iframe} />
+      <iframe title={draft.title} srcDoc={html} sandbox="allow-scripts allow-forms allow-popups" className={styles.iframe} />
+      {draft.published?.badge !== false && (
       <m.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 1.2, type: "spring", stiffness: 200, damping: 20 }}>
         <Link href={`/create?prompt=${encodeURIComponent(draft.prompt)}`} className={styles.badge}>
           <BrandMark size={22} />
@@ -39,6 +45,7 @@ export function PublishedSite({ slug }: { slug: string }) {
           </span>
         </Link>
       </m.div>
+      )}
     </div>
   );
 }

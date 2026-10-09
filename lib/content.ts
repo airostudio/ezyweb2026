@@ -1,3 +1,5 @@
+import { PLAN_LIMITS, type PlanId } from "@/lib/plans";
+
 /**
  * Marketing content: example prompts, community gallery and pricing.
  * Kept as plain data so copy tweaks never touch component code.
@@ -97,48 +99,77 @@ export const RECENT_CREATIONS = [
 ];
 
 export interface Plan {
-  id: "free" | "pro" | "unlimited";
+  id: PlanId;
   name: string;
   price: { monthly: number; yearly: number };
   blurb: string;
   features: string[];
+  /** Small print shown under the features (fair-use terms etc.) */
+  fineprint?: string;
   cta: string;
   highlight?: boolean;
 }
 
-/** Prices in AUD, GST inclusive. */
+const L = PLAN_LIMITS;
+
+/**
+ * Prices in AUD, GST inclusive. Every plan uses the same AI builder; plans
+ * differ in how many sites you keep and what you can do with them. Numbers
+ * come from lib/plans.ts so marketing copy can't drift from what's enforced.
+ */
 export const PLANS: Plan[] = [
   {
     id: "free",
-    name: "Free",
+    name: L.free.name,
     price: { monthly: 0, yearly: 0 },
     blurb: "For dabbling, gifting and pure chaos.",
-    features: ["3 live sites", "Free yourname.aduma.io address", "Unlimited generations & edits", "Remix anything in the gallery", "Small “Made with aduma.io” badge"],
+    features: [
+      `${L.free.sites} sites, shared on a free yourname.aduma.io link`,
+      "The same AI builder every plan uses",
+      `Up to ${L.free.editsPerSite} chat edits per site`,
+      "Your site's code stays protected from copycats",
+      "Small “Made with aduma.io” badge",
+    ],
     cta: "Start free",
   },
   {
     id: "pro",
-    name: "Pro",
+    name: L.pro.name,
     price: { monthly: 8, yearly: 6 },
     blurb: "For people who make a site for everything.",
-    features: ["25 live sites", "Connect your own domain", "Remove the aduma.io badge", "Password-protected sites", "Visitor stats & guestbook moderation", "Upload your own photos (10GB)"],
+    features: [
+      `${L.pro.sites} sites`,
+      "Connect your own domain",
+      "Remove the aduma.io badge",
+      "View and copy your site's code",
+      `Up to ${L.pro.editsPerSite} chat edits per site`,
+    ],
     cta: "Go Pro",
     highlight: true,
   },
   {
-    id: "unlimited",
-    name: "Unlimited",
-    price: { monthly: 18, yearly: 14 },
-    blurb: "For families, clubs and serial creators.",
-    features: ["Unlimited live sites", "Up to 5 custom domains", "Invite up to 6 co-editors", "Priority generation (faster magic)", "100GB photo & video storage", "A real human on support"],
-    cta: "Go Unlimited",
+    id: "bottomless",
+    name: L.bottomless.name,
+    price: { monthly: 12, yearly: 9 },
+    blurb: "For families, clubs and serial creators. Keep the sites coming.",
+    features: [
+      "Bottomless sites — make one for everything",
+      "Your own domain on any site",
+      "No badges, anywhere",
+      "View and copy your site's code",
+      `Up to ${L.bottomless.editsPerSite} chat edits per site`,
+    ],
+    fineprint: `Fair use: up to ${L.bottomless.sites} sites at once and ${L.bottomless.dailyBuilds} new builds a day.`,
+    cta: "Go Bottomless",
   },
 ];
 
 export const PRICING_FAQ = [
-  { q: "Is the free plan actually free?", a: "Yep. No card, no trial timer, no catch. You can make and publish sites forever. We make money when people want extras like custom domains." },
+  { q: "Is the free plan actually free?", a: `Yep. No card, no trial timer, no catch. Keep up to ${PLAN_LIMITS.free.sites} sites and share them forever. We make money when people want extras like more sites or their own domain.` },
   { q: "Do I need an account to try it?", a: "Nope. Type a prompt and go. You only need an account to publish or save across devices — and that's one tap with Google, Apple or a magic link." },
   { q: "Can I cancel anytime?", a: "Anytime, from settings, in two clicks. Your sites drop back to the free plan limits — we never delete your stuff." },
-  { q: "What about my custom domain?", a: "Pro and Unlimited plans connect any domain you own. We walk you through the DNS bit with copy-paste records, and SSL is automatic." },
+  { q: "What about my custom domain?", a: "Pro and Bottomless plans connect any domain you own. We walk you through the DNS bit with copy-paste records, and SSL is automatic. Free sites share on a yourname.aduma.io link." },
+  { q: "How bottomless is Bottomless?", a: `Like a bottomless brunch: keep going and we'll keep pouring. It's built to feel endless for real people — up to ${PLAN_LIMITS.bottomless.sites} sites at once and ${PLAN_LIMITS.bottomless.dailyBuilds} new builds a day, which is far more than almost anyone makes. Need more? Just ask.` },
+  { q: "Is the AI better on paid plans?", a: "Nope — everyone gets the same builder. Paying gets you more sites, your own domain, no badge and access to your code." },
   { q: "Can I use aduma.io for my business?", a: "You can, but aduma.io is built for fun stuff. If you need a proper business site, our friends at Ezyweb Solutions have you covered." },
 ];

@@ -5,6 +5,7 @@ import { AnimatePresence, m } from "framer-motion";
 import {
   ArrowUp,
   Code2,
+  Lock,
   ExternalLink,
   Eye,
   Laptop,
@@ -23,6 +24,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod/mini";
 import { Confetti } from "@/components/confetti";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { PromptBox } from "@/components/prompt-box";
 import { useToast } from "@/components/ui/toast";
 import { track } from "@/lib/analytics";
@@ -31,6 +33,7 @@ import { drafts, useDrafts, useHydrated, type ChatMessage, type Draft } from "@/
 import { promptSchema } from "@/lib/schemas";
 import { cn, timeAgo } from "@/lib/utils";
 import { streamGenerate } from "@/lib/aduma-client";
+import { usePlan } from "@/lib/use-plan";
 import { GeneratingOverlay } from "./generating-overlay";
 import { PublishDialog } from "./publish-dialog";
 import styles from "./studio.module.css";
@@ -67,6 +70,11 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
   const [error, setError] = useState<string | null>(null);
   const [device, setDevice] = useState<Device>("desktop");
   const [view, setView] = useState<"preview" | "code">("preview");
+  const plan = usePlan();
+  const planRef = useRef(plan);
+  planRef.current = plan;
+  /** Upsell dialog: site limit reached, or a server-side quota hit. */
+  const [limit, setLimit] = useState<{ kind: "sites" | "quota"; message: string } | null>(null);
   const [mobileTab, setMobileTab] = useState<"chat" | "preview">("chat");
   const [publishOpen, setPublishOpen] = useState(false);
   const [confetti, setConfetti] = useState(0);
@@ -85,6 +93,15 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
     async (prompt: string) => {
       const current = draftRef.current;
       const isEdit = Boolean(current?.html);
+      // Plan limit: a new build needs a free site slot.
+      if (!isEdit && drafts.list().length >= planRef.current.sites) {
+        const p = planRef.current;
+        setLimit({
+          kind: "sites",
+          message: `You've made ${p.sites} sites, the most the ${p.name} plan holds. Delete one to make room, or upgrade for more.`,
+        });
+        return;
+      }
       abortRef.current?.abort();
       const ctrl = new AbortController();
       abortRef.current = ctrl;
@@ -104,21 +121,25 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
       track(isEdit ? "edit_submitted" : "prompt_submitted", { length: prompt.length });
 
       try {
-        for await (const ev of streamGenerate({ prompt, spec: isEdit ? current?.spec : null }, ctrl.signal)) {
+        const request = isEdit && current ? { prompt, siteId: current.id, spec: current.spec, html: current.html } : { prompt };
+        for await (const ev of streamGenerate(request, ctrl.signal)) {
           if (ev.type === "stage") setStage(ev.stage);
           else if (ev.type === "thought") {
             setThought(ev.text);
             setThoughts((t) => [...t, ev.text]);
           } else if (ev.type === "html") setCode((c) => c + ev.chunk);
-          else if (ev.type === "error") throw new Error(ev.message);
+          else if (ev.type === "error") {
+            if (ev.code === "quota") setLimit({ kind: "quota", message: ev.message });
+            throw new Error(ev.message);
+          }
           else if (ev.type === "done") {
             const spec = ev.spec;
             const finalMessages = [...history, msg("assistant", ev.summary)];
             const next: Draft = {
               id: current?.id ?? spec?.id ?? crypto.randomUUID(),
-              title: spec?.title ?? current?.title ?? "My aduma.io site",
+              title: ev.title ?? spec?.title ?? current?.title ?? "My aduma.io site",
               emoji: spec?.emoji ?? current?.emoji ?? "✨",
-              tagline: spec?.tagline ?? current?.tagline ?? "",
+              tagline: ev.tagline ?? spec?.tagline ?? current?.tagline ?? "",
               prompt: current?.prompt ?? prompt,
               html: ev.html,
               spec,
@@ -292,16 +313,24 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
             ))}
           </div>
           <div className={styles.toolbarRight}>
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={() => setView((v) => (v === "code" ? "preview" : "code"))}
-              disabled={!hasSite}
-              aria-pressed={view === "code"}
-            >
-              {view === "code" ? <Eye aria-hidden /> : <Code2 aria-hidden />}
-              <span className={styles.hideXs}>{view === "code" ? "Preview" : "Code"}</span>
-            </button>
+            {plan.codeAccess ? (
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => setView((v) => (v === "code" ? "preview" : "code"))}
+                disabled={!hasSite}
+                aria-pressed={view === "code"}
+              >
+                {view === "code" ? <Eye aria-hidden /> : <Code2 aria-hidden />}
+                <span className={styles.hideXs}>{view === "code" ? "Preview" : "Code"}</span>
+              </button>
+            ) : (
+              <Link href="/pricing" className="btn btn-ghost btn-sm" title="Viewing and copying code is included with Pro">
+                <Lock aria-hidden />
+                <span className={styles.hideXs}>Code</span>
+                <span className="sr-only"> (Pro feature)</span>
+              </Link>
+            )}
             {draft?.published && (
               <Link href={`/p/${draft.published.subdomain}`} target="_blank" className="btn btn-ghost btn-sm" aria-label="Open live site in a new tab">
                 <ExternalLink aria-hidden />
@@ -348,7 +377,7 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
                   transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 />
               )}
-              {hasSite && view === "code" && (
+              {hasSite && view === "code" && plan.codeAccess && (
                 <pre className={styles.codeView} tabIndex={0} aria-label="Generated HTML">
                   <code>{draft!.html}</code>
                 </pre>
@@ -376,6 +405,23 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
         </div>
       </section>
 
+      <Dialog open={Boolean(limit)} onOpenChange={(o) => !o && setLimit(null)}>
+        <DialogContent>
+          <DialogTitle>{limit?.kind === "sites" ? "Your sites are full" : "That's the limit for now"}</DialogTitle>
+          <DialogDescription>{limit?.message}</DialogDescription>
+          <div className="row" style={{ justifyContent: "flex-end" }}>
+            {limit?.kind === "sites" && (
+              <Link href="/dashboard" className="btn btn-ghost" onClick={() => setLimit(null)}>
+                Manage my sites
+              </Link>
+            )}
+            <Link href="/pricing" className="btn btn-electric" onClick={() => { setLimit(null); track("upgrade_clicked", { from: limit?.kind ?? "studio" }); }}>
+              See plans
+            </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {draft && (
         <PublishDialog
           open={publishOpen}
@@ -395,12 +441,22 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
 
 function EmptyChat({ onPrompt, onOpen }: { onPrompt: (p: string) => void; onOpen: (d: Draft) => void }) {
   const list = useDrafts();
+  const plan = usePlan();
   return (
     <div className={styles.emptyChat}>
       <m.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="stack" style={{ "--gap": "0.5rem" } as React.CSSProperties}>
         <p className="eyebrow">Studio</p>
         <h2 className="h-2">What are we making today?</h2>
         <p className="muted">Describe it like you&apos;d tell a mate. The weirder the better.</p>
+        <p className={styles.sitesUsed}>
+          {list.length} of {plan.sites} {plan.name} sites used
+          {list.length >= plan.sites && (
+            <>
+              {" · "}
+              <Link href="/pricing">get more</Link>
+            </>
+          )}
+        </p>
       </m.div>
       <PromptBox variant="compact" demo={false} autoFocus onSubmitPrompt={onPrompt} />
       {list.length > 0 && (

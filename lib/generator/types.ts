@@ -68,11 +68,29 @@ export type GenerateEvent =
   | { type: "stage"; stage: number; label: string }
   | { type: "thought"; text: string }
   | { type: "html"; chunk: string }
-  | { type: "done"; spec: SiteSpec | null; html: string; summary: string }
-  | { type: "error"; message: string };
+  | {
+      type: "done";
+      /** Structured spec (mock engine only; LLM engines return null) */
+      spec: SiteSpec | null;
+      html: string;
+      summary: string;
+      /** Page title/description, for drafts and cards */
+      title?: string | null;
+      tagline?: string | null;
+    }
+  | {
+      type: "error";
+      message: string;
+      /** "quota": daily builds or per-site edits used up; "plan": needs an upgrade */
+      code?: "quota" | "plan";
+    };
 
 export interface GenerateRequest {
   prompt: string;
-  /** Present when the prompt is a follow-up edit to an existing site */
+  /** Existing site id; present (with spec or html) for follow-up edits */
+  siteId?: string;
+  /** Mock engine: current structured spec */
   spec?: SiteSpec | null;
+  /** LLM engines: current page HTML to edit */
+  html?: string;
 }

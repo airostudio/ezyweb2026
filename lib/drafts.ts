@@ -30,7 +30,8 @@ export interface Draft {
   messages: ChatMessage[];
   createdAt: number;
   updatedAt: number;
-  published?: { subdomain: string; customDomain?: string; at: number };
+  /** badge: show the "Made with aduma.io" badge (Free plan) */
+  published?: { subdomain: string; customDomain?: string; at: number; badge?: boolean };
 }
 
 const KEY = "aduma:drafts:v1";
