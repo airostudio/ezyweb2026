@@ -24,6 +24,8 @@ export interface PlanLimits {
   customDomain: boolean;
   /** Owner can view/copy the generated HTML in the studio. */
   codeAccess: boolean;
+  /** Click-to-edit text + colour editor in the studio (no AI cost). */
+  visualEditor: boolean;
   removeBadge: boolean;
 }
 
@@ -36,6 +38,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     editsPerSite: 15,
     customDomain: false,
     codeAccess: false,
+    visualEditor: false,
     removeBadge: false,
   },
   pro: {
@@ -46,6 +49,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     editsPerSite: 40,
     customDomain: true,
     codeAccess: true,
+    visualEditor: true,
     removeBadge: true,
   },
   // "Bottomless" — like a bottomless brunch: it feels endless, but there's a
@@ -59,6 +63,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     editsPerSite: 60,
     customDomain: true,
     codeAccess: true,
+    visualEditor: true,
     removeBadge: true,
   },
 };

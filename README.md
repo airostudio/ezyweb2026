@@ -165,6 +165,7 @@ Defined once in `lib/plans.ts`. The pricing page, studio and API all read from i
 | Custom domain | – | ✓ | ✓ |
 | Remove badge | – | ✓ | ✓ |
 | View / copy code | – | ✓ | ✓ |
+| Simple visual editor | – (upgrade prompt) | ✓ | ✓ |
 
 - **Site count** is enforced in the studio: the user sees a "your sites are
   full" dialog with options to delete a site or upgrade.
@@ -177,6 +178,20 @@ Defined once in `lib/plans.ts`. The pricing page, studio and API all read from i
   cap is disclosed on the pricing card and in the FAQ.
 - **Plan lookup:** with no billing yet, everyone is on Free unless listed in
   `PLAN_OVERRIDES`. Replace `planForEmail()` with your Stripe or DB lookup.
+
+### Simple visual editor (Pro and Bottomless)
+
+The studio's **Edit** button (`components/create/visual-editor.tsx`) lets owners
+click any text on their site and type, and change the site's colours (its CSS
+custom properties), then **Save** or **Discard**. It runs entirely in the
+browser, so there are no AI calls and it doesn't use the edit quota.
+
+The page is parsed into a clean copy in the app. Plain-text elements are
+tagged, and the sandboxed frame shows an edit-mode version with the page's own
+scripts paused. Each change is posted back and applied as text only, never
+as HTML, to the clean copy. So scripts, confetti and timers never leak into
+the saved page, and the editor's helpers are never saved. Free users see a
+locked Edit button that opens an upgrade prompt.
 
 ### Source protection
 

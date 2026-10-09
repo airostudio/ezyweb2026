@@ -64,7 +64,12 @@ export async function POST(req: Request) {
     async start(controller) {
       const send = (e: GenerateEvent) => controller.enqueue(encoder.encode(JSON.stringify(e) + "\n"));
       try {
-        if (provider === "mock") await runMock(send, req.signal, prompt, isEdit ? spec : null);
+        if (provider === "mock") {
+          // The mock edits its structured spec; a page changed in the visual
+          // editor has no spec any more, so only a real AI engine can edit it.
+          if (isEdit && !spec) throw new GenerationError("This site has hand edits, so chat changes need the full AI builder, which isn't switched on yet. Keep using the editor for now!");
+          await runMock(send, req.signal, prompt, isEdit ? spec : null);
+        }
         else await runLLM(send, req.signal, provider, prompt, isEdit ? currentHtml : null);
       } catch (err) {
         if (req.signal.aborted) return;

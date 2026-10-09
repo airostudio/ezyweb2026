@@ -6,6 +6,7 @@ import {
   ArrowUp,
   Code2,
   Lock,
+  PencilLine,
   ExternalLink,
   Eye,
   Laptop,
@@ -36,6 +37,7 @@ import { streamGenerate } from "@/lib/aduma-client";
 import { usePlan } from "@/lib/use-plan";
 import { GeneratingOverlay } from "./generating-overlay";
 import { PublishDialog } from "./publish-dialog";
+import { VisualEditor } from "./visual-editor";
 import styles from "./studio.module.css";
 
 type Status = "empty" | "generating" | "editing" | "ready" | "error";
@@ -74,7 +76,9 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
   const planRef = useRef(plan);
   planRef.current = plan;
   /** Upsell dialog: site limit reached, or a server-side quota hit. */
-  const [limit, setLimit] = useState<{ kind: "sites" | "quota"; message: string } | null>(null);
+  const [limit, setLimit] = useState<{ kind: "sites" | "quota" | "editor"; message: string } | null>(null);
+  /** Visual editor open (paid plans). */
+  const [editing, setEditing] = useState(false);
   const [mobileTab, setMobileTab] = useState<"chat" | "preview">("chat");
   const [publishOpen, setPublishOpen] = useState(false);
   const [confetti, setConfetti] = useState(0);
@@ -212,6 +216,7 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
 
   const startFresh = () => {
     abortRef.current?.abort();
+    setEditing(false);
     setDraft(null);
     setMessages([]);
     setStatus("empty");
@@ -285,6 +290,7 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
         {(hasSite || busy || status === "error") && (
           <ChatComposer
             busy={busy}
+            locked={editing}
             hasSite={hasSite}
             onSend={run}
             onStop={stop}
@@ -313,6 +319,28 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
             ))}
           </div>
           <div className={styles.toolbarRight}>
+            <button
+              type="button"
+              className={cn("btn btn-sm", editing ? "btn-primary" : "btn-ghost")}
+              disabled={!hasSite || busy}
+              aria-pressed={plan.visualEditor ? editing : undefined}
+              onClick={() => {
+                if (!plan.visualEditor) {
+                  track("upgrade_clicked", { from: "editor-locked" });
+                  setLimit({
+                    kind: "editor",
+                    message: "Click any text on your site to change it and tweak its colours, no prompts needed. The editor comes with Pro and Bottomless.",
+                  });
+                  return;
+                }
+                setView("preview");
+                setEditing((e) => !e);
+              }}
+            >
+              {plan.visualEditor ? <PencilLine aria-hidden /> : <Lock aria-hidden />}
+              <span className={styles.hideXs}>Edit</span>
+              {!plan.visualEditor && <span className="sr-only"> (Pro feature)</span>}
+            </button>
             {plan.codeAccess ? (
               <button
                 type="button"
@@ -365,7 +393,24 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
             </div>
 
             <div className={styles.frameBody}>
-              {hasSite && view === "preview" && (
+              {hasSite && editing && (
+                <VisualEditor
+                  key={draft!.updatedAt}
+                  html={draft!.html}
+                  onCancel={() => setEditing(false)}
+                  onSave={(html) => {
+                    const current = draftRef.current!;
+                    // Hand edits make the page the source of truth (spec no longer matches).
+                    const next: Draft = { ...current, html, spec: null, updatedAt: Date.now() };
+                    drafts.save(next);
+                    setDraft(next);
+                    setEditing(false);
+                    toast("Edits saved", "✏️");
+                    track("edit_submitted", { kind: "visual" });
+                  }}
+                />
+              )}
+              {hasSite && !editing && view === "preview" && (
                 <m.iframe
                   key={draft!.updatedAt}
                   title={`Preview of ${draft!.title}`}
@@ -407,9 +452,16 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
 
       <Dialog open={Boolean(limit)} onOpenChange={(o) => !o && setLimit(null)}>
         <DialogContent>
-          <DialogTitle>{limit?.kind === "sites" ? "Your sites are full" : "That's the limit for now"}</DialogTitle>
+          <DialogTitle>
+            {limit?.kind === "sites" ? "Your sites are full" : limit?.kind === "editor" ? "Unlock the editor ✏️" : "That's the limit for now"}
+          </DialogTitle>
           <DialogDescription>{limit?.message}</DialogDescription>
           <div className="row" style={{ justifyContent: "flex-end" }}>
+            {limit?.kind === "editor" && (
+              <button type="button" className="btn btn-ghost" onClick={() => setLimit(null)}>
+                Maybe later
+              </button>
+            )}
             {limit?.kind === "sites" && (
               <Link href="/dashboard" className="btn btn-ghost" onClick={() => setLimit(null)}>
                 Manage my sites
@@ -538,12 +590,15 @@ const editSchema = z.object({ prompt: promptSchema });
 
 function ChatComposer({
   busy,
+  locked = false,
   hasSite,
   onSend,
   onStop,
   onRetry,
 }: {
   busy: boolean;
+  /** Visual editor is open: chat is paused so changes can't collide. */
+  locked?: boolean;
   hasSite: boolean;
   onSend: (p: string) => void;
   onStop: () => void;
@@ -562,7 +617,7 @@ function ChatComposer({
 
   return (
     <div className={styles.composer}>
-      {hasSite && !busy && (
+      {hasSite && !busy && !locked && (
         <ul className={cn(styles.suggestions, "scrollbar-none")} aria-label="Edit suggestions">
           {EDIT_SUGGESTIONS.map((s) => (
             <li key={s}>
@@ -586,8 +641,8 @@ function ChatComposer({
           id="edit-input"
           rows={1}
           className={styles.composerInput}
-          placeholder={hasSite ? "Ask for a change…" : "Describe your site…"}
-          disabled={busy}
+          placeholder={locked ? "Save or discard your edits to chat again" : hasSite ? "Ask for a change…" : "Describe your site…"}
+          disabled={busy || locked}
           aria-invalid={Boolean(formState.errors.prompt)}
           {...register("prompt")}
           onKeyDown={(e) => {
@@ -607,7 +662,7 @@ function ChatComposer({
             <Square aria-hidden style={{ fill: "currentColor" }} />
           </button>
         ) : (
-          <button type="submit" className="btn btn-primary btn-icon btn-sm" aria-label="Send">
+          <button type="submit" className="btn btn-primary btn-icon btn-sm" aria-label="Send" disabled={locked}>
             <ArrowUp aria-hidden />
           </button>
         )}
