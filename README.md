@@ -164,7 +164,6 @@ Defined once in `lib/plans.ts`. The pricing page, studio and API all read from i
 | Share on `name.aduma.io` | ✓ | ✓ | ✓ |
 | Custom domain | – | ✓ | ✓ |
 | Remove badge | – | ✓ | ✓ |
-| View / copy code | – | ✓ | ✓ |
 | Simple visual editor | – (upgrade prompt) | ✓ | ✓ |
 
 - **Site count** is enforced in the studio: the user sees a "your sites are
@@ -195,14 +194,23 @@ locked Edit button that opens an upgrade prompt.
 
 ### Source protection
 
-Published pages (`/p/[slug]`) inject a deterrent script (`lib/protect.ts`). It
-blocks right-click, dragging and the view-source, save and devtools shortcuts,
-both inside the site and on the host page. The site HTML is loaded
-client-side into a sandboxed frame, so the browser's "view source" shows only
-the app shell. On Free, the studio's Code view is locked too.
+The site's code is never shown to anyone, on any plan:
 
-This stops casual copying. It can't stop a determined person, because
-anything a browser renders can be extracted, so treat it as a deterrent, not DRM.
+- **No code view:** the studio has no code view or HTML export. While a site
+  builds, the animation shows a wireframe, not code.
+- **No streamed code:** `/api/generate` streams only progress events. The
+  finished page is sent once, in the final `done` event.
+- **Deterrent script:** published pages (`/p/[slug]`), the studio preview and
+  the visual editor all get a deterrent script (`lib/protect.ts`). It blocks
+  right-click (including "View frame source"), dragging, and the view-source,
+  save and devtools shortcuts.
+- **Sandboxed frame:** site HTML is loaded client-side into a sandboxed
+  frame, so the browser's own "view source" shows only the app shell.
+
+This stops casual copying, but it isn't DRM. A browser has to receive a
+page's HTML to display it, so a determined person can still extract it with
+devtools opened beforehand. True protection would need server-side rendering
+of published sites plus obfuscation, and even that only raises the bar.
 
 ### Event protocol
 
@@ -213,7 +221,6 @@ anything a browser renders can be extracted, so treat it as a deterrent, not DRM
 type GenerateEvent =
   | { type: "stage"; stage: number; label: string }      // progress (0–4)
   | { type: "thought"; text: string }                    // narration
-  | { type: "html"; chunk: string }                      // streamed markup
   | { type: "done"; spec: SiteSpec | null; html: string; summary: string; title?: string | null; tagline?: string | null }
   | { type: "error"; message: string; code?: "quota" | "plan" };
 ```

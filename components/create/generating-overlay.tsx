@@ -2,7 +2,6 @@
 
 import { AnimatePresence, m } from "framer-motion";
 import { Check } from "lucide-react";
-import { useEffect, useRef } from "react";
 import { STAGES } from "@/lib/generator/stages";
 import styles from "./studio.module.css";
 
@@ -15,25 +14,18 @@ const ORB_SHAPES = [
 
 /**
  * Full-preview "magic in progress" takeover: a morphing orb, floating
- * sparks, a stage checklist and the HTML streaming in like a hacker movie.
+ * sparks, a stage checklist and a wireframe of the page assembling itself.
+ * (The site's code is deliberately never shown.)
  */
 export function GeneratingOverlay({
   stage,
   thought,
-  code,
   prompt,
 }: {
   stage: number;
   thought: string;
-  code: string;
   prompt: string;
 }) {
-  const codeRef = useRef<HTMLPreElement>(null);
-  useEffect(() => {
-    const el = codeRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [code]);
-
   const progress = Math.min(100, ((stage + 1) / STAGES.length) * 100);
 
   return (
@@ -109,12 +101,36 @@ export function GeneratingOverlay({
           })}
         </ol>
 
-        {code && (
-          <pre ref={codeRef} className={styles.codeStream} aria-hidden>
-            {code.slice(-1400)}
-          </pre>
-        )}
+        <Wireframe stage={stage} />
       </div>
     </m.div>
+  );
+}
+
+/** A mini page that builds up block by block as the stages advance. */
+const BLOCKS = [
+  { at: 0, className: styles.wfNav },
+  { at: 1, className: styles.wfHero },
+  { at: 2, className: styles.wfText },
+  { at: 2, className: styles.wfTextShort },
+  { at: 3, className: styles.wfCard },
+  { at: 3, className: styles.wfCard },
+  { at: 3, className: styles.wfCard },
+  { at: 4, className: styles.wfFooter },
+];
+
+function Wireframe({ stage }: { stage: number }) {
+  return (
+    <div className={styles.wireframe} aria-hidden>
+      {BLOCKS.map((b, i) => (
+        <m.span
+          key={i}
+          className={b.className}
+          initial={false}
+          animate={stage >= b.at ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0.12, scale: 0.96, y: 4 }}
+          transition={{ type: "spring", stiffness: 260, damping: 22, delay: (i % 3) * 0.06 }}
+        />
+      ))}
+    </div>
   );
 }

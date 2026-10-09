@@ -442,18 +442,6 @@
   border: 0;
   background: #fff;
 }
-.codeView {
-  height: 100%;
-  overflow: auto;
-  padding: 1.25rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  word-break: break-all;
-  color: var(--fg-muted);
-  background: var(--bg-sunken);
-}
 
 /* Empty & error states */
 .emptyPreview {
@@ -626,26 +614,6 @@
   border-width: 1.5px;
 }
 
-.codeStream {
-  width: 100%;
-  height: 6.5rem;
-  overflow: hidden;
-  padding: 0.75rem;
-  border-radius: var(--r-md);
-  background: color-mix(in srgb, var(--fg) 92%, transparent);
-  color: color-mix(in srgb, var(--zap) 85%, white);
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  line-height: 1.5;
-  text-align: left;
-  white-space: pre-wrap;
-  word-break: break-all;
-  mask-image: linear-gradient(to bottom, transparent, #000 40%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 40%);
-}
-[data-theme="dark"] .codeStream {
-  background: #000;
-}
 
 /* Editing shimmer */
 .editing {
@@ -844,4 +812,48 @@
   color: var(--magenta-ink);
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* Wireframe of the page assembling (shown while generating) */
+.wireframe {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+  padding: 0.75rem;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-strong);
+  background: var(--bg-raised);
+}
+.wireframe span {
+  display: block;
+  border-radius: 6px;
+  background: var(--line-strong);
+}
+.wfNav {
+  grid-column: 1 / -1;
+  height: 0.6rem;
+  width: 40%;
+}
+.wfHero {
+  grid-column: 1 / -1;
+  height: 2.4rem;
+  background: var(--grad-electric) !important;
+}
+.wfText {
+  grid-column: 1 / -1;
+  height: 0.5rem;
+}
+.wfTextShort {
+  grid-column: 1 / 3;
+  height: 0.5rem;
+}
+.wfCard {
+  height: 1.8rem;
+}
+.wfFooter {
+  grid-column: 1 / -1;
+  height: 0.5rem;
+  width: 30%;
+  justify-self: center;
 }

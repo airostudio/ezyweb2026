@@ -17,6 +17,7 @@ export const runtime = "edge";
  *
  * Body: { prompt, siteId?, spec?, html? }   (siteId + spec/html ⇒ follow-up edit)
  * Response: `application/x-ndjson` stream of `GenerateEvent`s, one per line.
+ * Progress events stream live; the page HTML arrives once, in the final event.
  *
  * Engines, in priority order:
  *   1. ADUMA_API_URL set   → proxy to the hosted aduma.io engine (same protocol)
@@ -131,7 +132,8 @@ async function runLLM(send: Send, signal: AbortSignal, provider: "anthropic" | "
   let raw = "";
   for await (const delta of streamer(message, signal)) {
     raw += delta;
-    send({ type: "html", chunk: delta });
+    // Only progress is streamed; the page itself is sent once, when complete
+    // (we never stream the site's code to the browser).
     const progress = raw.length / expected;
     advance(progress > 0.85 ? 4 : progress > 0.35 ? 3 : progress > 0.12 ? 2 : 1);
   }
@@ -167,15 +169,7 @@ async function runMock(send: Send, signal: AbortSignal, prompt: string, spec: Si
       await sleep(pace * 0.4);
       send({ type: "thought", text: thought });
     }
-    if (stage === 3) {
-      for (const c of chunk(result.html, isEdit ? 12 : 28)) {
-        if (signal.aborted) return;
-        send({ type: "html", chunk: c });
-        await sleep(isEdit ? 25 : 45);
-      }
-    } else {
-      await sleep(pace * (0.75 + Math.random() * 0.5));
-    }
+    await sleep(pace * (stage === 3 ? 1.6 : 0.75 + Math.random() * 0.5));
   }
   for (const t of thoughts) send({ type: "thought", text: t });
   await sleep(180);
@@ -201,9 +195,3 @@ async function proxyToAduma(url: string, payload: unknown) {
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-function chunk(s: string, n: number): string[] {
-  const size = Math.ceil(s.length / n);
-  const out: string[] = [];
-  for (let i = 0; i < s.length; i += size) out.push(s.slice(i, i + size));
-  return out;
-}

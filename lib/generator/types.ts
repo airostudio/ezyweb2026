@@ -67,7 +67,6 @@ export interface SiteSpec {
 export type GenerateEvent =
   | { type: "stage"; stage: number; label: string }
   | { type: "thought"; text: string }
-  | { type: "html"; chunk: string }
   | {
       type: "done";
       /** Structured spec (mock engine only; LLM engines return null) */

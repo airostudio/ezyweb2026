@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, m } from "framer-motion";
 import {
   ArrowUp,
-  Code2,
   Lock,
   PencilLine,
   ExternalLink,
@@ -34,6 +33,7 @@ import { drafts, useDrafts, useHydrated, type ChatMessage, type Draft } from "@/
 import { promptSchema } from "@/lib/schemas";
 import { cn, timeAgo } from "@/lib/utils";
 import { streamGenerate } from "@/lib/aduma-client";
+import { protectHtml } from "@/lib/protect";
 import { usePlan } from "@/lib/use-plan";
 import { GeneratingOverlay } from "./generating-overlay";
 import { PublishDialog } from "./publish-dialog";
@@ -67,11 +67,9 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
   const [stage, setStage] = useState(0);
   const [thought, setThought] = useState("");
   const [thoughts, setThoughts] = useState<string[]>([]);
-  const [code, setCode] = useState("");
   const [activePrompt, setActivePrompt] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [device, setDevice] = useState<Device>("desktop");
-  const [view, setView] = useState<"preview" | "code">("preview");
   const plan = usePlan();
   const planRef = useRef(plan);
   planRef.current = plan;
@@ -119,8 +117,6 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
       setStage(0);
       setThought("");
       setThoughts([]);
-      setCode("");
-      setView("preview");
       if (!isEdit) setMobileTab("preview");
       track(isEdit ? "edit_submitted" : "prompt_submitted", { length: prompt.length });
 
@@ -131,8 +127,7 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
           else if (ev.type === "thought") {
             setThought(ev.text);
             setThoughts((t) => [...t, ev.text]);
-          } else if (ev.type === "html") setCode((c) => c + ev.chunk);
-          else if (ev.type === "error") {
+          } else if (ev.type === "error") {
             if (ev.code === "quota") setLimit({ kind: "quota", message: ev.message });
             throw new Error(ev.message);
           }
@@ -333,7 +328,6 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
                   });
                   return;
                 }
-                setView("preview");
                 setEditing((e) => !e);
               }}
             >
@@ -341,24 +335,6 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
               <span className={styles.hideXs}>Edit</span>
               {!plan.visualEditor && <span className="sr-only"> (Pro feature)</span>}
             </button>
-            {plan.codeAccess ? (
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={() => setView((v) => (v === "code" ? "preview" : "code"))}
-                disabled={!hasSite}
-                aria-pressed={view === "code"}
-              >
-                {view === "code" ? <Eye aria-hidden /> : <Code2 aria-hidden />}
-                <span className={styles.hideXs}>{view === "code" ? "Preview" : "Code"}</span>
-              </button>
-            ) : (
-              <Link href="/pricing" className="btn btn-ghost btn-sm" title="Viewing and copying code is included with Pro">
-                <Lock aria-hidden />
-                <span className={styles.hideXs}>Code</span>
-                <span className="sr-only"> (Pro feature)</span>
-              </Link>
-            )}
             {draft?.published && (
               <Link href={`/p/${draft.published.subdomain}`} target="_blank" className="btn btn-ghost btn-sm" aria-label="Open live site in a new tab">
                 <ExternalLink aria-hidden />
@@ -410,31 +386,25 @@ export function Studio({ initialPrompt, initialDraftId }: { initialPrompt: strin
                   }}
                 />
               )}
-              {hasSite && !editing && view === "preview" && (
+              {hasSite && !editing && (
                 <m.iframe
                   key={draft!.updatedAt}
                   title={`Preview of ${draft!.title}`}
                   className={styles.iframe}
-                  srcDoc={draft!.html}
+                  srcDoc={protectHtml(draft!.html)}
                   sandbox="allow-scripts allow-forms allow-popups"
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 />
               )}
-              {hasSite && view === "code" && plan.codeAccess && (
-                <pre className={styles.codeView} tabIndex={0} aria-label="Generated HTML">
-                  <code>{draft!.html}</code>
-                </pre>
-              )}
-
               {!hasSite && status === "empty" && <EmptyPreview />}
               {!hasSite && status === "error" && (
                 <ErrorPreview message={error} onRetry={activePrompt ? () => run(activePrompt) : undefined} />
               )}
 
               <AnimatePresence>
-                {status === "generating" && <GeneratingOverlay stage={stage} thought={thought} code={code} prompt={activePrompt} />}
+                {status === "generating" && <GeneratingOverlay stage={stage} thought={thought} prompt={activePrompt} />}
               </AnimatePresence>
               <AnimatePresence>
                 {status === "editing" && (

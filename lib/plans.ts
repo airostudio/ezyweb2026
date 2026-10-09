@@ -22,8 +22,6 @@ export interface PlanLimits {
   /** Follow-up edits allowed per site (server-enforced). */
   editsPerSite: number;
   customDomain: boolean;
-  /** Owner can view/copy the generated HTML in the studio. */
-  codeAccess: boolean;
   /** Click-to-edit text + colour editor in the studio (no AI cost). */
   visualEditor: boolean;
   removeBadge: boolean;
@@ -37,7 +35,6 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     dailyBuilds: 6,
     editsPerSite: 15,
     customDomain: false,
-    codeAccess: false,
     visualEditor: false,
     removeBadge: false,
   },
@@ -48,7 +45,6 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     dailyBuilds: 25,
     editsPerSite: 40,
     customDomain: true,
-    codeAccess: true,
     visualEditor: true,
     removeBadge: true,
   },
@@ -62,7 +58,6 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
     dailyBuilds: 40,
     editsPerSite: 60,
     customDomain: true,
-    codeAccess: true,
     visualEditor: true,
     removeBadge: true,
   },
