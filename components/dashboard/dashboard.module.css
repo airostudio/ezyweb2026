@@ -221,3 +221,9 @@
 .dangerPanel {
   border-color: color-mix(in srgb, var(--danger) 40%, transparent);
 }
+.upgradeLink {
+  font-weight: 600;
+  color: var(--magenta-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

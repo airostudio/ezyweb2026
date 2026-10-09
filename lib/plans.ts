@@ -73,18 +73,17 @@ export function isPlanId(value: unknown): value is PlanId {
 }
 
 /**
- * Resolves a signed-in user's plan. There is no billing backend yet, so
- * everyone is on Free unless listed in PLAN_OVERRIDES, e.g.
+ * Manual plan grants (comps, staff, testing), checked before Stripe:
  *   PLAN_OVERRIDES="me@example.com:bottomless,friend@example.com:pro"
- * Swap this for a Stripe/DB lookup when payments go live. (Server only —
- * the env var is not exposed to the browser.)
+ * Returns null when the email isn't listed. Server only — the env var is
+ * not exposed to the browser. Paid plans come from Stripe (lib/billing.ts).
  */
-export function planForEmail(email: string | null | undefined): PlanId {
-  if (!email) return "free";
+export function planOverride(email: string | null | undefined): PlanId | null {
+  if (!email) return null;
   const raw = process.env.PLAN_OVERRIDES ?? "";
   for (const entry of raw.split(",")) {
     const [who, plan] = entry.split(":").map((s) => s.trim().toLowerCase());
     if (who && who === email.toLowerCase() && isPlanId(plan)) return plan;
   }
-  return "free";
+  return null;
 }

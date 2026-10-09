@@ -4,11 +4,14 @@ import { AnimatePresence, m } from "framer-motion";
 import { ExternalLink, Globe, MoreHorizontal, Pencil, Plus, Settings, ShieldAlert, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useRef, useState } from "react";
+import { Confetti } from "@/components/confetti";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 import { drafts, useDrafts, useHydrated, type Draft } from "@/lib/drafts";
 import { PLANS } from "@/lib/content";
+import { usePlan } from "@/lib/use-plan";
 import { timeAgo } from "@/lib/utils";
 import styles from "./dashboard.module.css";
 
@@ -19,7 +22,25 @@ export function MySites({ userName, signedIn }: { userName: string | null; signe
   const router = useRouter();
   const params = useSearchParams();
   const [toDelete, setToDelete] = useState<Draft | null>(null);
-  const upgrade = PLANS.find((p) => p.id === params.get("upgrade"));
+  const plan = usePlan();
+  const { update, status } = useSession();
+  // Back from Stripe Checkout (?upgraded=pro): refresh the plan from Stripe, celebrate.
+  const upgraded = PLANS.find((p) => p.id === params.get("upgraded"));
+  const [welcome, setWelcome] = useState<typeof upgraded>(undefined);
+  const [confetti, setConfetti] = useState(0);
+  const refreshed = useRef(false);
+  useEffect(() => {
+    // update() is a no-op while the session is still loading, so wait for it.
+    if (!upgraded || refreshed.current || status === "loading") return;
+    refreshed.current = true;
+    // Passing data makes update() POST, which fires the jwt "update" trigger
+    // and re-reads the plan from Stripe (a bare update() is just a GET).
+    void update({ refreshPlan: true }).then(() => {
+      setWelcome(upgraded);
+      setConfetti((c) => c + 1);
+      router.replace("/dashboard", { scroll: false });
+    });
+  }, [upgraded, update, router, status]);
 
   const published = list.filter((d) => d.published).length;
 
@@ -30,7 +51,15 @@ export function MySites({ userName, signedIn }: { userName: string | null; signe
           <p className="eyebrow">Dashboard</p>
           <h1 className="h-1">{userName ? `G'day, ${userName}` : "My sites"}</h1>
           <p className="muted">
-            {hydrated ? `${list.length} ${list.length === 1 ? "site" : "sites"} · ${published} live` : " "}
+            {hydrated ? `${list.length} of ${plan.sites} sites · ${published} live · ${plan.name} plan` : " "}
+            {hydrated && plan.id === "free" && (
+              <>
+                {" · "}
+                <Link href="/pricing" className={styles.upgradeLink}>
+                  Upgrade
+                </Link>
+              </>
+            )}
           </p>
         </div>
         <div className="row">
@@ -106,20 +135,23 @@ export function MySites({ userName, signedIn }: { userName: string | null; signe
         </DialogContent>
       </Dialog>
 
-      <Dialog open={Boolean(upgrade)} onOpenChange={(o) => !o && router.replace("/dashboard")}>
+      <Confetti fire={confetti} />
+      <Dialog open={Boolean(welcome)} onOpenChange={(o) => !o && setWelcome(undefined)}>
         <DialogContent>
-          <DialogTitle>Upgrade to {upgrade?.name} ✨</DialogTitle>
+          <DialogTitle>Welcome to {welcome?.name}! 🎉</DialogTitle>
           <DialogDescription>
-            Checkout isn&apos;t wired up in this build yet. Plug in Stripe (see README → Payments) and this button will take you there.
+            {plan.id === welcome?.id
+              ? "Payment sorted. Here's what you just unlocked:"
+              : "Payment received! Your new plan can take a moment to show up. Refresh in a minute if it hasn't yet."}
           </DialogDescription>
           <ul className={styles.upgradeList}>
-            {upgrade?.features.map((f) => (
+            {welcome?.features.map((f) => (
               <li key={f}>✓ {f}</li>
             ))}
           </ul>
-          <button type="button" className="btn btn-electric w-full" onClick={() => router.replace("/dashboard")}>
-            Sounds good
-          </button>
+          <Link href="/create" className="btn btn-electric w-full" onClick={() => setWelcome(undefined)}>
+            Let&apos;s make something
+          </Link>
         </DialogContent>
       </Dialog>
     </div>

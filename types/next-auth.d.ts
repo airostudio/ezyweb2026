@@ -6,3 +6,11 @@ declare module "next-auth" {
     user?: DefaultSession["user"] & { plan?: PlanId };
   }
 }
+
+declare module "@auth/core/jwt" {
+  interface JWT {
+    plan?: PlanId;
+    /** When the plan was last read from Stripe (ms since epoch). */
+    planCheckedAt?: number;
+  }
+}

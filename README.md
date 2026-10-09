@@ -176,8 +176,8 @@ Defined once in `lib/plans.ts`. The pricing page, studio and API all read from i
 - **"Bottomless"** is deliberately not called "unlimited". Under Australian
   Consumer Law an "unlimited" claim has to be literally true, so the fair-use
   cap is disclosed on the pricing card and in the FAQ.
-- **Plan lookup:** with no billing yet, everyone is on Free unless listed in
-  `PLAN_OVERRIDES`. Replace `planForEmail()` with your Stripe or DB lookup.
+- **Plan lookup:** from Stripe subscriptions, cached in the session (see
+  Payments), with `PLAN_OVERRIDES` for manual grants.
 
 ### Simple visual editor (Pro and Bottomless)
 
@@ -265,13 +265,46 @@ scripts load after the page is interactive. The events already instrumented
 are prompt submits, generation success/failure, edits, remixes, demo clicks,
 publish, custom domains, sign-in starts and upgrade clicks.
 
-## Payments
+## Payments (Stripe)
 
-Upgrade buttons route to `/dashboard?upgrade=pro|bottomless`, which shows a
-placeholder dialog. Drop a Stripe Checkout session creation into that flow
-when you're ready.
+Upgrades use **Stripe Checkout**, and plan management uses Stripe's hosted
+**billing portal**. Stripe is the source of truth, so there's no database to run.
 
----
+**Flow**
+1. Pricing → **Go Pro** / **Go Bottomless** calls `POST /api/checkout`
+   (`lib/billing.ts`). Signed-out visitors go to sign-in first, and come back to
+   `/pricing?checkout=pro&interval=year`, where checkout resumes automatically.
+2. Checkout creates a monthly or yearly AUD subscription, tagged with
+   `metadata.plan`. The existing Stripe customer is reused when the email
+   matches, and promotion codes are allowed.
+3. Stripe returns the buyer to `/dashboard?upgraded=pro`. The dashboard calls
+   `useSession().update({...})`, which re-reads the plan from Stripe, then shows
+   confetti and a welcome dialog.
+4. Paid users see **Manage subscription** in Settings and **Your plan · manage**
+   on the pricing page. Both open the billing portal: switch plan, update card,
+   get invoices, cancel. Existing subscribers who pick another plan go to the
+   portal too, so nobody ends up with two subscriptions.
+
+**How plans are resolved:** `resolvePlan(email)` checks `PLAN_OVERRIDES`
+first, then the customer's active, trialing or past-due Stripe subscriptions.
+The highest plan wins. The result is cached in the signed session token for 5
+minutes, so upgrades, downgrades and cancellations take effect within 5
+minutes, or instantly after checkout. The API's quotas read the same session
+plan.
+
+**Setup**
+1. Set `STRIPE_SECRET_KEY` (start with a `sk_test_…` key and test cards).
+2. In the Stripe dashboard, open **Settings → Billing → Customer portal** and
+   save a configuration. Enable plan switching and add your products if you
+   want users to change plans there. The portal API errors until this is saved.
+3. Optional: create Prices in Stripe and set `STRIPE_PRICE_*`. Otherwise each
+   checkout uses inline AUD prices from `PAID_PRICES`.
+4. Sign-in has to work in production for anyone to pay. Configure
+   `RESEND_API_KEY` for magic links, and/or Google or Apple.
+
+Prices are GST-inclusive amounts. If you're GST-registered, configure tax
+settings in Stripe so invoices show GST correctly. `STRIPE_API_BASE` exists only
+for local testing against `stripe-mock` or a fake server.
 
 ## Environment variables
 
@@ -288,7 +321,9 @@ See `.env.example`. Everything is optional locally.
 | `OPENAI_API_KEY` (+ `OPENAI_MODEL`, `OPENAI_REASONING_EFFORT`) | One AI key for real builds | GPT-5.6 Luna builder |
 | `AI_PROVIDER` | – | Force `anthropic`, `openai` or `mock` |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | **Yes, with a paid model** | Cross-instance quota counters |
-| `PLAN_OVERRIDES` | – | Grant Pro/Bottomless by email until billing exists |
+| `PLAN_OVERRIDES` | – | Grant Pro/Bottomless by email (comps, testing) |
+| `STRIPE_SECRET_KEY` | **Yes, to take payments** | Stripe Checkout + billing portal |
+| `STRIPE_PRICE_PRO_MONTHLY` … `STRIPE_PRICE_BOTTOMLESS_YEARLY` | – | Use dashboard Prices instead of built-in amounts |
 | `ADUMA_API_URL`, `ADUMA_API_KEY` | – | Proxy to a hosted aduma.io engine |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | – | Draft sync |
 | `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`, `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST` | – | Analytics |

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@/auth";
+import { BillingPanel } from "@/components/dashboard/billing-panel";
 import { SettingsForm } from "@/components/dashboard/settings-form";
 import { slugify } from "@/lib/utils";
 
@@ -19,6 +20,7 @@ export default async function SettingsPage() {
           <h1 className="h-1">Settings</h1>
         </header>
 
+        {session?.user && <BillingPanel />}
         {session?.user ? (
           <SettingsForm
             email={session.user.email ?? ""}

@@ -6,7 +6,7 @@ import { buildMessage, editMessage } from "@/lib/ai/prompt";
 import { activeProvider, cleanHtml, GenerationError, pageMeta } from "@/lib/ai/shared";
 import { edit, generate, type GenerateEvent, type SiteSpec } from "@/lib/generator";
 import { STAGES } from "@/lib/generator/stages";
-import { PLAN_LIMITS, planForEmail } from "@/lib/plans";
+import { PLAN_LIMITS } from "@/lib/plans";
 import { quota, quotaIdentity } from "@/lib/quota";
 import { generateRequestSchema } from "@/lib/schemas";
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
 
   // ── Budget guard: plan-based quotas, charged before spending tokens ────
   const session = await auth();
-  const plan = PLAN_LIMITS[planForEmail(session?.user?.email)];
+  const plan = PLAN_LIMITS[session?.user?.plan ?? "free"];
   const identity = quotaIdentity(session?.user?.email, req.headers);
   const charge = isEdit ? await quota.edit(identity, siteId!, plan.editsPerSite) : await quota.build(identity, plan.dailyBuilds);
   if (!charge.ok) {
