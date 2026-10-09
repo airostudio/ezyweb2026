@@ -232,12 +232,14 @@ pink". It's what runs when no AI key is configured.
 NextAuth v5 (Auth.js) with JWT sessions, so no database is required and it
 runs on the edge.
 
-- **Magic link** — `/api/magic-link` signs a 15-minute JWT with `AUTH_SECRET`
-  (via `jose`) and emails it with [Resend](https://resend.com) if
-  `RESEND_API_KEY` is set. Otherwise the link is logged to the server console,
-  and in development it's also shown on screen. `/auth/verify` exchanges it
-  through a Credentials provider. To make links single-use, store the token's
-  `jti` (Supabase/Upstash) and reject repeats in `verifyMagicToken`.
+- **Magic link:** `/api/magic-link` signs a 15-minute JWT with `AUTH_SECRET`
+  (via `jose`) and emails it with [Resend](https://resend.com). The sender
+  (`AUTH_EMAIL_FROM`, default `hello@aduma.io`) must use a domain **verified in
+  Resend**. Otherwise Resend rejects the email, the user sees "We couldn't send
+  your sign-in email" and the reason shows up in the Vercel logs. In
+  development, links are shown on screen instead. Sign-in links are never
+  logged in production. To make links single-use, store the token's `jti`
+  (Supabase/Upstash) and reject repeats in `verifyMagicToken`.
 - **Google / Apple** — enabled automatically when their env vars are present.
 - Try-before-you-sign-up: nothing requires an account except syncing across
   devices. Guests can create *and* publish, and get a gentle nudge to sign in.

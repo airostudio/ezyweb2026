@@ -22,12 +22,21 @@ export async function POST(req: Request) {
   const origin = new URL(req.url).origin;
   const url = `${origin}/auth/verify?token=${encodeURIComponent(token)}&next=${encodeURIComponent(callback)}`;
 
-  const sent = await sendMagicLinkEmail(parsed.data.email, url).catch(() => false);
-  if (!sent) console.info(`[magic-link] ${parsed.data.email} → ${url}`);
+  const result = await sendMagicLinkEmail(parsed.data.email, url);
+  const dev = process.env.NODE_ENV !== "production";
 
-  return NextResponse.json({
-    ok: true,
-    // Only ever expose the link to the browser in local development.
-    devLink: !sent && process.env.NODE_ENV !== "production" ? url : undefined,
-  });
+  if (result === "sent") return NextResponse.json({ ok: true });
+
+  // Development: no email needed — log the link and hand it to the page.
+  // (Never log or expose sign-in links in production: they're credentials.)
+  if (dev) {
+    console.info(`[magic-link] ${parsed.data.email} → ${url}`);
+    return NextResponse.json({ ok: true, devLink: url });
+  }
+
+  const message =
+    result === "not-configured"
+      ? "Email sign-in isn't set up yet. Try Google or Apple, or check back soon."
+      : "We couldn't send your sign-in email just now. Please try again in a minute.";
+  return NextResponse.json({ error: message }, { status: result === "not-configured" ? 503 : 502 });
 }
