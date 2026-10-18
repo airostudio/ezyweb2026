@@ -141,7 +141,8 @@ Each build is one streamed call (`lib/ai/deepseek.ts`, via Fireworks' OpenAI-com
   in one `<style>`, no frameworks, CDNs, external scripts or images, mobile-first,
   accessible, under ~22 KB. It's frozen text, so it forms a stable prefix that
   Fireworks' prompt cache can reuse on repeat builds.
-- **Cost controls:** `max_tokens` is capped at 12,000 (`lib/ai/shared.ts`),
+- **Cost controls:** `max_tokens` is capped at 32,000 (`lib/ai/shared.ts`, override with
+  `FIREWORKS_MAX_TOKENS`), which covers the model's reasoning plus the page,
   and any `<think>` reasoning is stripped. A typical build costs a fraction of
   a cent: about 2k input tokens plus 6–8k output tokens. Edits resend the
   current page, capped at 120k characters.
@@ -327,6 +328,7 @@ See `.env.example`. Everything is optional locally.
 | `RESEND_API_KEY`, `AUTH_EMAIL_FROM` | For magic links | Email delivery |
 | `FIREWORKS_API_KEY` | Real builds | DeepSeek builder via Fireworks |
 | `FIREWORKS_MODEL` | – | Override the model (full path, or a bare name expanded to `accounts/fireworks/models/<name>`) |
+| `FIREWORKS_MAX_TOKENS` | – | Output token cap per build, reasoning included (default 32000) |
 | `FIREWORKS_BASE_URL` | – | Override the API base (default `https://api.fireworks.ai/inference/v1`) |
 | `AI_PROVIDER` | – | `mock` forces the free built-in generator |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | **Yes, with a paid model** | Cross-instance quota counters |

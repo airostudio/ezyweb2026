@@ -4,11 +4,12 @@
  */
 
 /**
- * Hard ceiling on output tokens per build (covers any hidden reasoning plus
- * the page). A ~22 KB page is roughly 6-7k tokens, so this leaves headroom
- * while capping worst-case spend per build at a fraction of a cent.
+ * Hard ceiling on output tokens per build. It covers the model's reasoning
+ * as well as the page: a ~22 KB page is roughly 6-7k tokens, and DeepSeek
+ * can think for as long again before writing, so 12k proved too tight.
+ * Override with FIREWORKS_MAX_TOKENS.
  */
-export const MAX_OUTPUT_TOKENS = 12_000;
+export const MAX_OUTPUT_TOKENS = Number(process.env.FIREWORKS_MAX_TOKENS) || 32_000;
 
 /** Max size of an existing page we'll send back for an edit (~30k tokens). */
 export const MAX_EDIT_HTML_CHARS = 120_000;

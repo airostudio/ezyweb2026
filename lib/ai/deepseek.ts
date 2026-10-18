@@ -33,15 +33,24 @@ export const streamDeepSeek: TextStreamer = async function* (userMessage, signal
       },
       { signal },
     );
+    let reasoningChars = 0;
+    let answerChars = 0;
     for await (const chunk of stream) {
       const choice = chunk.choices[0];
-      // Only the answer text is used; any reasoning stream is ignored.
+      // Only the answer text is used; any reasoning stream is just counted.
+      const reasoning = (choice?.delta as { reasoning_content?: string } | undefined)?.reasoning_content;
+      if (reasoning) reasoningChars += reasoning.length;
       const text = choice?.delta?.content;
-      if (text) yield text;
+      if (text) {
+        answerChars += text.length;
+        yield text;
+      }
       if (choice?.finish_reason === "content_filter") {
         throw new GenerationError("That one's not something we can build. Try a different idea?");
       }
-      if (choice?.finish_reason === "length") console.warn("[fireworks] hit max_tokens");
+      if (choice?.finish_reason === "length") console.warn(
+          `[fireworks] hit max_tokens (${MAX_OUTPUT_TOKENS}); reasoning ${reasoningChars} chars, answer ${answerChars} chars`,
+        );
     }
   } catch (err) {
     if (err instanceof GenerationError) throw err;
