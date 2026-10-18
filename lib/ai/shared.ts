@@ -6,8 +6,7 @@
 /**
  * Hard ceiling on output tokens per build (covers any hidden reasoning plus
  * the page). A ~22 KB page is roughly 6-7k tokens, so this leaves headroom
- * while capping worst-case spend per build at a fraction of a cent on
- * Haiku 5.5 ($0.50 per million output tokens).
+ * while capping worst-case spend per build at a fraction of a cent.
  */
 export const MAX_OUTPUT_TOKENS = 12_000;
 
@@ -22,19 +21,16 @@ export class GenerationError extends Error {
 /** Streams raw text deltas for one user message. */
 export type TextStreamer = (userMessage: string, signal?: AbortSignal) => AsyncGenerator<string>;
 
-export type ProviderId = "anthropic" | "openai" | "mock";
+export type ProviderId = "deepseek" | "mock";
 
 /**
- * Which backend builds sites. AI_PROVIDER forces one; otherwise the first
- * provider with an API key wins (Anthropic, then OpenAI); with no keys the
- * built-in mock keeps the product fully usable for free.
+ * Which backend builds sites: DeepSeek (via Fireworks) when FIREWORKS_API_KEY
+ * is set, otherwise the built-in mock (free, offline). AI_PROVIDER=mock
+ * forces the mock, e.g. for local testing with a key present.
  */
 export function activeProvider(): ProviderId {
-  const forced = process.env.AI_PROVIDER?.toLowerCase();
-  if (forced === "anthropic" || forced === "openai" || forced === "mock") return forced;
-  if (process.env.ANTHROPIC_API_KEY) return "anthropic";
-  if (process.env.OPENAI_API_KEY) return "openai";
-  return "mock";
+  if (process.env.AI_PROVIDER?.toLowerCase() === "mock") return "mock";
+  return process.env.FIREWORKS_API_KEY ? "deepseek" : "mock";
 }
 
 /**
@@ -45,7 +41,11 @@ export function activeProvider(): ProviderId {
  * Returns null if the output doesn't look like an HTML document at all.
  */
 export function cleanHtml(raw: string): string | null {
-  let html = raw.trim().replace(/^```(?:html)?\s*/i, "").replace(/```\s*$/, "");
+  let html = raw
+    .replace(/<think>[\s\S]*?(?:<\/think>|$)/gi, "") // inline reasoning some DeepSeek models emit
+    .trim()
+    .replace(/^```(?:html)?\s*/i, "")
+    .replace(/```\s*$/, "");
   const start = html.search(/<!doctype html|<html[\s>]/i);
   if (start === -1) return null;
   html = html.slice(start);

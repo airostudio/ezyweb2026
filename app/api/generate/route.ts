@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { streamAnthropic } from "@/lib/ai/anthropic";
-import { streamOpenAI } from "@/lib/ai/openai";
+import { streamDeepSeek } from "@/lib/ai/deepseek";
 import { buildMessage, editMessage } from "@/lib/ai/prompt";
 import { activeProvider, cleanHtml, GenerationError, pageMeta } from "@/lib/ai/shared";
 import { edit, generate, type GenerateEvent, type SiteSpec } from "@/lib/generator";
@@ -21,7 +20,7 @@ export const runtime = "edge";
  *
  * Engines, in priority order:
  *   1. ADUMA_API_URL set   → proxy to the hosted aduma.io engine (same protocol)
- *   2. an LLM key present  → Claude Haiku 5.5 or GPT-5.6 Luna (lib/ai)
+ *   2. FIREWORKS_API_KEY set → DeepSeek V4.1 Flash via Fireworks (lib/ai/deepseek.ts)
  *   3. otherwise           → the built-in mock generator (free, offline)
  *
  * Every plan uses the same cheap model; plan limits (daily builds, edits per
@@ -71,7 +70,7 @@ export async function POST(req: Request) {
           if (isEdit && !spec) throw new GenerationError("This site has hand edits, so chat changes need the full AI builder, which isn't switched on yet. Keep using the editor for now!");
           await runMock(send, req.signal, prompt, isEdit ? spec : null);
         }
-        else await runLLM(send, req.signal, provider, prompt, isEdit ? currentHtml : null);
+        else await runLLM(send, req.signal, prompt, isEdit ? currentHtml : null);
       } catch (err) {
         if (req.signal.aborted) return;
         // Failed builds don't count against the user's quota.
@@ -112,8 +111,8 @@ const LLM_THOUGHTS = [
 ];
 
 /** Streams a real LLM build/edit, mapping raw text to stage/html events. */
-async function runLLM(send: Send, signal: AbortSignal, provider: "anthropic" | "openai", prompt: string, currentHtml: string | null) {
-  const streamer = provider === "anthropic" ? streamAnthropic : streamOpenAI;
+async function runLLM(send: Send, signal: AbortSignal, prompt: string, currentHtml: string | null) {
+  const streamer = streamDeepSeek;
   const message = currentHtml ? editMessage(prompt, currentHtml) : buildMessage(prompt);
   // Rough expected size, used only to advance the progress stages.
   const expected = currentHtml ? Math.max(currentHtml.length, 6_000) : 16_000;

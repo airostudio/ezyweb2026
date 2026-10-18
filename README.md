@@ -124,26 +124,25 @@ never downloaded. To swap the logo, replace those files and keep the names.
 
 ### Engines
 
-`POST /api/generate` picks an engine automatically (override with `AI_PROVIDER`):
+`POST /api/generate` picks an engine automatically (`AI_PROVIDER=mock` forces the mock):
 
 | Priority | When | Engine |
 | -------- | ---- | ------ |
 | 1 | `ADUMA_API_URL` set | Proxy to a hosted aduma.io engine (same NDJSON protocol) |
-| 2 | `ANTHROPIC_API_KEY` set | **Claude Haiku 5.5** (`claude-haiku-5-5`), the cheapest Claude model |
-| 3 | `OPENAI_API_KEY` set | **GPT-5.6 Luna** (`gpt-5.6-luna`), OpenAI's budget tier |
-| 4 | nothing set | Built-in mock generator (free, offline, great for dev) |
+| 2 | `FIREWORKS_API_KEY` set | **DeepSeek V4.1 Flash** on Fireworks (`accounts/fireworks/models/deepseek-v4p1-flash-1017`) |
+| 3 | nothing set | Built-in mock generator (free, offline, great for dev) |
 
 **Every plan uses the same cheap model.** Plans differ only in limits and
 features (below), never in model quality.
 
-Each build is one streamed call (`lib/ai/anthropic.ts`, `lib/ai/openai.ts`):
+Each build is one streamed call (`lib/ai/deepseek.ts`, via Fireworks' OpenAI-compatible API):
 
 - **System prompt** (`lib/ai/prompt.ts`): one single-page site, hand-rolled CSS
   in one `<style>`, no frameworks, CDNs, external scripts or images, mobile-first,
-  accessible, under ~22 KB. It's frozen text, marked cacheable so repeat builds
-  read it from the prompt cache.
+  accessible, under ~22 KB. It's frozen text, so it forms a stable prefix that
+  Fireworks' prompt cache can reuse on repeat builds.
 - **Cost controls:** `max_tokens` is capped at 12,000 (`lib/ai/shared.ts`),
-  with low reasoning effort. On Haiku 5.5 a typical build costs a fraction of
+  and any `<think>` reasoning is stripped. A typical build costs a fraction of
   a cent: about 2k input tokens plus 6–8k output tokens. Edits resend the
   current page, capped at 120k characters.
 - **Clean-up** (`cleanHtml`): fences and chatter are stripped. External
@@ -326,9 +325,10 @@ See `.env.example`. Everything is optional locally.
 | `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | – | Google sign-in |
 | `AUTH_APPLE_ID` / `AUTH_APPLE_SECRET` | – | Apple sign-in |
 | `RESEND_API_KEY`, `AUTH_EMAIL_FROM` | For magic links | Email delivery |
-| `ANTHROPIC_API_KEY` (+ `ANTHROPIC_MODEL`) | One AI key for real builds | Claude Haiku 5.5 builder |
-| `OPENAI_API_KEY` (+ `OPENAI_MODEL`, `OPENAI_REASONING_EFFORT`) | One AI key for real builds | GPT-5.6 Luna builder |
-| `AI_PROVIDER` | – | Force `anthropic`, `openai` or `mock` |
+| `FIREWORKS_API_KEY` | Real builds | DeepSeek builder via Fireworks |
+| `FIREWORKS_MODEL` | – | Override the model (full path, or a bare name expanded to `accounts/fireworks/models/<name>`) |
+| `FIREWORKS_BASE_URL` | – | Override the API base (default `https://api.fireworks.ai/inference/v1`) |
+| `AI_PROVIDER` | – | `mock` forces the free built-in generator |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | **Yes, with a paid model** | Cross-instance quota counters |
 | `PLAN_OVERRIDES` | – | Grant Pro/Bottomless by email (comps, testing) |
 | `STRIPE_SECRET_KEY` | **Yes, to take payments** | Stripe Checkout + billing portal |
