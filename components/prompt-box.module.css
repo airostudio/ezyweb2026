@@ -78,6 +78,10 @@
 .hero .placeholder {
   inset: 1.5rem 1.6rem auto;
 }
+/* Invisible copy of the longest example; the textarea is sized to fit it. */
+.sizer {
+  visibility: hidden;
+}
 .caret {
   display: inline-block;
   width: 2px;
@@ -192,8 +196,6 @@
 }
 .compact .placeholder {
   inset: 1rem 1.25rem auto;
-  white-space: nowrap;
-  overflow: hidden;
 }
 
 @media (min-width: 520px) {

@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import styles from "./prompt-box.module.css";
 
 const formSchema = z.object({ prompt: promptSchema });
+const LONGEST_EXAMPLE = EXAMPLE_PROMPTS.reduce((a, b) => (b.length > a.length ? b : a), "");
 type FormValues = z.infer<typeof formSchema>;
 
 interface PromptBoxProps {
@@ -35,6 +36,7 @@ export function PromptBox({ variant = "hero", starters = true, demo = true, auto
   const router = useRouter();
   const id = useId();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const sizerRef = useRef<HTMLDivElement | null>(null);
   const typingRef = useRef<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -52,12 +54,37 @@ export function PromptBox({ variant = "hero", starters = true, demo = true, auto
   const { ref: rhfRef, ...field } = register("prompt");
 
   // Auto-grow the textarea; CSS transitions the height for a smooth expand.
-  useEffect(() => {
+  // While empty it's also tall enough for the longest cycling placeholder
+  // (measured from a hidden sizer), so examples wrap instead of being cut
+  // off and the box doesn't jump as they type.
+  const resize = useCallback(() => {
     const el = textareaRef.current;
     if (!el) return;
     el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 240)}px`;
-  }, [value]);
+    let height = el.scrollHeight;
+    const sizer = sizerRef.current;
+    if (!el.value && sizer) {
+      height = Math.max(height, sizer.offsetTop + sizer.offsetHeight + parseFloat(getComputedStyle(el).paddingBottom));
+    }
+    el.style.height = `${Math.min(height, 240)}px`;
+  }, []);
+
+  useEffect(resize, [value, resize]);
+
+  // Re-fit when the box changes width (rotation, panel resize, fonts loading).
+  useEffect(() => {
+    const area = textareaRef.current?.parentElement;
+    if (!area) return;
+    let width = area.clientWidth;
+    const ro = new ResizeObserver(() => {
+      if (area.clientWidth === width) return;
+      width = area.clientWidth;
+      resize();
+    });
+    ro.observe(area);
+    void document.fonts?.ready.then(resize);
+    return () => ro.disconnect();
+  }, [resize]);
 
   // Global ⌘K / "/" to focus the prompt (hero instance only).
   useEffect(() => {
@@ -171,6 +198,9 @@ export function PromptBox({ variant = "hero", starters = true, demo = true, auto
               disabled={submitting}
             />
             {!value && <CyclingPlaceholder paused={submitting} />}
+            <div ref={sizerRef} className={cn(styles.placeholder, styles.sizer)} aria-hidden>
+              {LONGEST_EXAMPLE}
+            </div>
           </div>
 
           <div className={styles.toolbar}>
